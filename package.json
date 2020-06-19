@@ -191,5 +191,5 @@
 			"@semantic-release/github"
 		]
 	},
-	"private": true,
+	"private": true
 }
