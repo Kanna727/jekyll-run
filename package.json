@@ -157,6 +157,7 @@
 		"test": "node ./out/test/runTest.js"
 	},
 	"devDependencies": {
+		"semantic-release": "^17.0.8",
 		"@semantic-release/github": "^7.0.7",
 		"@types/vscode": "^1.46.0",
 		"@types/glob": "^7.1.1",
