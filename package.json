@@ -1,7 +1,7 @@
 {
 	"name": "jekyll-run",
 	"displayName": "Jekyll Run",
-	"description": "build and run your jekyll static website",
+	"description": "Build and Run your Jekyll static website",
 	"version": "1.0.0",
 	"engines": {
 		"vscode": "^1.46.0"
@@ -15,6 +15,10 @@
 		"Programming Languages",
 		"Keymaps",
 		"Other"
+	],
+	"keywords": [
+		"Jekyll",
+		"run"
 	],
 	"repository": {
 		"type": "git",
