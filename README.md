@@ -49,5 +49,5 @@ If a valid Jekyll Project is open:
 
 ## Requirements
 
-* Static website Workspace in VSCode i.e, `_config.yml` should be present in the opened workspace
+* Static Website Workspace in VSCode i.e, `_config.yml` should be present in the opened workspace
 * [Jekyll](https://jekyllrb.com/docs/installation/)
