@@ -11,9 +11,3 @@
 ### Bug Fixes
 
 * updated semantic-release config ([044b966](https://github.com/Kanna727/jekyll-run/commit/044b966a52076f6376ad70faa0fd6e5b0f49b27d))
-
-# Change Log
-
-## [Unreleased]
-
-- Initial release
