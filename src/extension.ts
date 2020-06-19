@@ -11,9 +11,9 @@ let currWorkspace: WorkspaceFolder | undefined;
 let pid: number = 0;
 let isRunning = false;
 
-let runButton: StatusBarItem | undefined
-let stopButton: StatusBarItem | undefined
-let restartButton: StatusBarItem | undefined
+let runButton: StatusBarItem | undefined;
+let stopButton: StatusBarItem | undefined;
+let restartButton: StatusBarItem | undefined;
 
 interface IStatusBarItemAlignment {
     position: StatusBarAlignment;
@@ -42,18 +42,20 @@ function isStaticWebsiteWorkspace(): boolean {
         if (resource.scheme === 'file') {
             currWorkspace = workspace.getWorkspaceFolder(resource);
             if (currWorkspace) {
-                if (existsSync(currWorkspace.uri.fsPath + '/_config.yml'))
-                    return true
+                if (existsSync(currWorkspace.uri.fsPath + '/_config.yml')) {
+                    return true;
+                }
             }
         }
     } else {
         currWorkspace = workspace.workspaceFolders[0];
         if (currWorkspace) {
-            if (existsSync(currWorkspace.uri.fsPath + '/_config.yml'))
-                return true
+            if (existsSync(currWorkspace.uri.fsPath + '/_config.yml')) {
+                return true;
+            }
         }
     }
-    return false
+    return false;
 }
 
 const buildButton = (alignment: IStatusBarItemAlignment, iconName: string, text: string = "", command: string, tooltip: string) => {
@@ -62,7 +64,7 @@ const buildButton = (alignment: IStatusBarItemAlignment, iconName: string, text:
     button.command = command;
     button.tooltip = tooltip;
     return button;
-}
+};
 
 function initStopButton() {
     const stopButtonAlignment: IStatusBarItemAlignment = {
@@ -98,7 +100,7 @@ function initRunButton() {
         offset: 500
     };
 
-    const runText: string = "Jekyll Run"
+    const runText: string = "Jekyll Run";
 
     runButton =
         buildButton(runButtonAlignment, Icons.Start, "Jekyll Run", "jekyll-run.Run", runText);
@@ -108,10 +110,10 @@ function initRunButton() {
 
 function updateStatusBarItemsWhileRunning() {
     if (runButton) {
-        runButton.hide()
-        runButton.dispose()
-        initStopButton()
-        initRestartButton()
+        runButton.hide();
+        runButton.dispose();
+        initStopButton();
+        initRestartButton();
     }
 }
 
@@ -123,7 +125,7 @@ function revertStatusBarItems() {
         restartButton.dispose();
     }
 
-    initRunButton()
+    initRunButton();
 }
 
 // this method is called when your extension is activated
@@ -134,27 +136,29 @@ export function activate(context: ExtensionContext) {
         if (isStaticWebsiteWorkspace() && currWorkspace) {
             if (await lookpath('jekyll')) {
                 if (await lookpath('bundle')) {
-                    isRunning = true
-                    commands.executeCommand('setContext', 'isRunning', true)
-                    updateStatusBarItemsWhileRunning()
+                    isRunning = true;
+                    commands.executeCommand('setContext', 'isRunning', true);
+                    updateStatusBarItemsWhileRunning();
                     const run = new Run();
                     run.run(currWorkspace.uri.fsPath).
                         catch((error) => {
-                            console.error(error)
+                            console.error(error);
                             isRunning = false;
-                            commands.executeCommand('setContext', 'isRunning', false)
-                            revertStatusBarItems()
+                            commands.executeCommand('setContext', 'isRunning', false);
+                            revertStatusBarItems();
                         }).
-                        finally(() => pid = run.pid)
-                } else
-                    window.showErrorMessage('Bundler not installed')
-            } else
-                window.showErrorMessage('Jekyll not installed')
+                        finally(() => pid = run.pid);
+                } else {
+                    window.showErrorMessage('Bundler not installed');
+                }
+            } else {
+                window.showErrorMessage('Jekyll not installed');
+            }
         } else {
             if (currWorkspace) {
-                window.showInformationMessage('The workspace/folder: ' + currWorkspace.name + ' is not Jekyll compatible')
+                window.showInformationMessage('The workspace/folder: ' + currWorkspace.name + ' is not Jekyll compatible');
             } else {
-                window.showErrorMessage('No active workspace/folder')
+                window.showErrorMessage('No active workspace/folder');
             }
         }
     });
@@ -163,17 +167,17 @@ export function activate(context: ExtensionContext) {
         if (isStaticWebsiteWorkspace() && currWorkspace) {
             if (await lookpath('jekyll')) {
                 if (await lookpath('bundle')) {
-                    const build = new Build()
-                    build.build(currWorkspace.uri.fsPath).catch((error) => console.error(error))
+                    const build = new Build();
+                    build.build(currWorkspace.uri.fsPath).catch((error) => console.error(error));
                 } else {
-                    window.showErrorMessage('Bundler not installed')
+                    window.showErrorMessage('Bundler not installed');
                 }
             } else {
-                window.showErrorMessage('Jekyll not installed')
+                window.showErrorMessage('Jekyll not installed');
             }
         } else {
             if (currWorkspace) {
-                window.showInformationMessage('The workspace/folder: ' + currWorkspace.name + ' is not Jekyll compatible')
+                window.showInformationMessage('The workspace/folder: ' + currWorkspace.name + ' is not Jekyll compatible');
             } else {
                 window.showErrorMessage('No active workspace/folder');
             }
@@ -182,49 +186,50 @@ export function activate(context: ExtensionContext) {
 
     const stop = commands.registerCommand('jekyll-run.Stop', async () => {
         if (isStaticWebsiteWorkspace() && currWorkspace && isRunning) {
-            const stop = new Stop()
+            const stop = new Stop();
             stop.Stop(pid).then(() => {
-                isRunning = false
-                commands.executeCommand('setContext', 'isRunning', false)
-                revertStatusBarItems()
-            })
+                isRunning = false;
+                commands.executeCommand('setContext', 'isRunning', false);
+                revertStatusBarItems();
+            });
         } else {
             window.showErrorMessage('No instance of Jekyll is running');
         }
-    })
+    });
 
     const restart = commands.registerCommand('jekyll-run.Restart', async () => {
         if (isStaticWebsiteWorkspace() && currWorkspace && isRunning) {
-            const stop = new Stop()
-            stop.Stop(pid)
+            const stop = new Stop();
+            stop.Stop(pid);
 
             const run = new Run();
             run.run(currWorkspace.uri.fsPath).
-                then(() => {}).
+                then(() => { }).
                 catch((error) => {
-                    console.error(error)
-                    isRunning = false
-                    commands.executeCommand('setContext', 'isRunning', false)
-                    revertStatusBarItems()
+                    console.error(error);
+                    isRunning = false;
+                    commands.executeCommand('setContext', 'isRunning', false);
+                    revertStatusBarItems();
                 }).
-                finally(() => pid = run.pid)
+                finally(() => pid = run.pid);
         } else {
             window.showErrorMessage('No instance of Jekyll is running');
         }
-    })
+    });
 
     if (isRunning) {
-        updateStatusBarItemsWhileRunning()
+        updateStatusBarItemsWhileRunning();
     }
-    else
-        initRunButton()
+    else {
+        initRunButton();
+    }
 
     context.subscriptions.push(run);
     context.subscriptions.push(build);
     context.subscriptions.push(stop);
     context.subscriptions.push(restart);
 
-    commands.executeCommand('setContext', 'jekyll-run', true)
+    commands.executeCommand('setContext', 'jekyll-run', true);
 }
 
 // this method is called when your extension is deactivated
