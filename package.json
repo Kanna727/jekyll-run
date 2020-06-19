@@ -2,7 +2,7 @@
 	"name": "jekyll-run",
 	"displayName": "Jekyll Run",
 	"description": "Build and Run your Jekyll static website",
-	"version": "1.1.0",
+	"version": "1.2.4",
 	"engines": {
 		"vscode": "^1.18.0"
 	},
@@ -197,22 +197,28 @@
 			"@semantic-release/github"
 		],
 		"plugins": [
-		    "@semantic-release/commit-analyzer",
-		    "@semantic-release/release-notes-generator",
-		    "@semantic-release/changelog",
-		    ["@semantic-release/npm", {
-		      "tarballDir": "release"
-		    }],
-		    ["@semantic-release/github", {
-		      "assets": "release/*.tgz"
-		    }],
-		    "@semantic-release/git"
-		  ]
+			"@semantic-release/commit-analyzer",
+			"@semantic-release/release-notes-generator",
+			"@semantic-release/changelog",
+			[
+				"@semantic-release/npm",
+				{
+					"tarballDir": "release"
+				}
+			],
+			[
+				"@semantic-release/github",
+				{
+					"assets": "release/*.tgz"
+				}
+			],
+			"@semantic-release/git"
+		]
 	},
 	"private": true,
 	"files": [
-	  "CHANGELOG.md",
-	  "package.json",
-	  "package-lock.json"
+		"CHANGELOG.md",
+		"package.json",
+		"package-lock.json"
 	]
 }
