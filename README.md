@@ -16,10 +16,13 @@ If a Jekyll Workspace is open:
 
 * You can run following commands from Command Palette/Keybindings:
 
-  * Jekyll Build    &nbsp;&nbsp;&nbsp;&nbsp;(ctrl+F8) &nbsp;&nbsp;&nbsp;&nbsp; Builds project
-  * Jekyll Run      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(ctrl+F5) &nbsp;&nbsp;&nbsp;&nbsp; Builds, Starts Jekyll Server & Opens the local hosted site in Browser
-  * Jekyll Stop&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(ctrl+F6) &nbsp;&nbsp;&nbsp;&nbsp; Stops Jekyll Server
-  * Jekyll Restart&nbsp;&nbsp;(ctrl+F7) &nbsp;&nbsp;&nbsp;&nbsp; Restarts Jekyll Server
+  | Command | Shortcut | Functionality
+  | --- | --- | --- |
+  | Jekyll Run | (ctrl+F5) | Builds Project, Starts Jekyll Server & Opens the local hosted site in Browser
+  | Jekyll Stop | (ctrl+F6) | Stops Jekyll Server
+  | Jekyll Restart | (ctrl+F7) | Restarts Jekyll Server
+  | Jekyll Build | (ctrl+F8) | Builds Project
+  | Jekyll Open in Browser | (ctrl+F9) | Opens the local hosted site in Browser while Jekyll Server is running
 
 * Status Bar shortcuts:
 
@@ -29,7 +32,7 @@ If a Jekyll Workspace is open:
     <img  src="media/snaps/status-bar-run.png">
     </p>
 
-  * Jekyll Stop/Restart
+  * Jekyll Stop/Restart/Open in Browser
 
     <p align="center">
     <img  src="media/snaps/status-bar-stop-restart.png">
