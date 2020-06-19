@@ -1,6 +1,8 @@
-[![Marketplace Version](https://vsmarketplacebadge.apphb.com/version-short/dedsec727.jekyll-run.svg)](https://marketplace.visualstudio.com/items?itemName=Dedsec727.jekyll-run)
-[![Downloads](https://vsmarketplacebadge.apphb.com/downloads/dedsec727.jekyll-run.svg)](https://marketplace.visualstudio.com/items?itemName=Dedsec727.jekyll-run)
-[![Rating](https://vsmarketplacebadge.apphb.com/rating-short/dedsec727.jekyll-run.svg)](https://marketplace.visualstudio.com/items?itemName=Dedsec727.jekyll-run)
+<p align="center">
+    <img src="https://vsmarketplacebadge.apphb.com/version-short/dedsec727.jekyll-run.svg?label=Version" alt="Jekyll Run Version">
+    <img src="https://vsmarketplacebadge.apphb.com/downloads/dedsec727.jekyll-run.svg?label=Installs" alt="Jekyll Run Installs">
+    <img src="https://vsmarketplacebadge.apphb.com/rating-short/dedsec727.jekyll-run.svg?label=Rating" alt="Jekyll Run Rating">
+</p>
 
 # VSCode Extension to Build & Run Jekyll Static Websites
 
