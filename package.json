@@ -1,0 +1,174 @@
+{
+	"name": "jekyll-run",
+	"displayName": "Jekyll Run",
+	"description": "build and run your jekyll static website",
+	"version": "1.0.0",
+	"engines": {
+		"vscode": "^1.46.0"
+	},
+	"author": {
+		"name": "Prasanth Kanna",
+		"email": "prasanth.kanna727@outlook.com",
+		"url": "https://dedsec727.github.io"
+	},
+	"categories": [
+		"Programming Languages",
+		"Keymaps",
+		"Other"
+	],
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/Kanna727/jekyll-run"
+	},
+	"bugs": {
+		"url": "https://github.com/Kanna727/jekyll-run/issues"
+	},
+	"publisher": "Dedsec727",
+	"icon": "media/icon.png",
+	"galleryBanner": {
+		"color": "#D3D3D3",
+		"theme": "dark"
+	},
+	"activationEvents": [
+		"workspaceContains:**/_config.yml",
+		"onCommand:jekyll-run.Run",
+		"onCommand:jekyll-run.Build",
+		"onCommand:jekyll-run.Stop",
+		"onCommand:jekyll-run.Restart"
+	],
+	"main": "./out/extension.js",
+	"contributes": {
+		"commands": [
+			{
+				"command": "jekyll-run.Run",
+				"title": "Jekyll Run",
+				"category": "Jekyll",
+				"icon":{
+					"light": "./media/light/debug-start.svg",
+					"dark": "./media/dark/debug-start.svg"
+				}
+			},
+			{
+				"command": "jekyll-run.Build",
+				"title": "Jekyll Build",
+				"category": "Jekyll"
+			},
+			{
+				"command": "jekyll-run.Stop",
+				"title": "Jekyll Stop",
+				"category": "Jekyll",
+				"icon": {
+					"light": "./media/light/debug-stop.svg",
+					"dark": "./media/dark/debug-stop.svg"
+				}
+			},
+			{
+				"command": "jekyll-run.Restart",
+				"title": "Jekyll Restart",
+				"category": "Jekyll",
+				"icon": {
+					"light": "./media/light/debug-restart.svg",
+					"dark": "./media/dark/debug-restart.svg"
+				}
+			}
+		],
+		"menus": {
+			"commandPalette": [
+				{
+					"command": "jekyll-run.Run",
+					"when": "jekyll-run"
+				},
+				{
+					"command": "jekyll-run.Build",
+					"when": "jekyll-run"
+				},
+				{
+					"command": "jekyll-run.Stop",
+					"when": "jekyll-run"
+				},
+				{
+					"command": "jekyll-run.Restart",
+					"when": "jekyll-run"
+				}
+			],
+			"editor/title": [
+				{
+					"command": "jekyll-run.Run",
+					"when": "jekyll-run&&!isRunning",
+					"group": "navigation@1"
+				},
+				{
+					"command": "jekyll-run.Stop",
+					"when": "jekyll-run&&isRunning",
+					"group": "navigation@2"
+				},
+				{
+					"command": "jekyll-run.Restart",
+					"when": "jekyll-run&&isRunning",
+					"group": "navigation@3"
+				}
+			]
+		},
+		"keybindings": [
+			{
+				"mac": "cmd+f5",
+				"win": "ctrl+f5",
+				"linux": "ctrl+f5",
+				"key": "ctrl+f5",
+				"command": "jekyll-run.Run",
+				"when": "jekyll-run"
+			},
+			{
+				"mac": "cmd+f6",
+				"win": "ctrl+f6",
+				"linux": "ctrl+f6",
+				"key": "ctrl+f6",
+				"command": "jekyll-run.Stop",
+				"when": "jekyll-run"
+			},
+			{
+				"mac": "cmd+f8",
+				"win": "ctrl+f8",
+				"linux": "ctrl+f8",
+				"key": "ctrl+f8",
+				"command": "jekyll-run.Restart",
+				"when": "jekyll-run"
+			},
+			{
+				"mac": "cmd+f9",
+				"win": "ctrl+f9",
+				"linux": "ctrl+f9",
+				"key": "ctrl+f9",
+				"command": "jekyll-run.Build",
+				"when": "jekyll-run"
+			}
+		]
+	},
+	"scripts": {
+		"vscode:prepublish": "npm run compile",
+		"compile": "tsc -p ./",
+		"lint": "eslint src --ext ts",
+		"watch": "tsc -watch -p ./",
+		"pretest": "npm run compile && npm run lint",
+		"test": "node ./out/test/runTest.js"
+	},
+	"devDependencies": {
+		"@types/vscode": "^1.46.0",
+		"@types/glob": "^7.1.1",
+		"@types/mocha": "^7.0.2",
+		"@types/node": "^13.11.0",
+		"eslint": "^6.8.0",
+		"@typescript-eslint/parser": "^2.30.0",
+		"@typescript-eslint/eslint-plugin": "^2.30.0",
+		"glob": "^7.1.6",
+		"mocha": "^7.1.2",
+		"typescript": "^3.8.3",
+		"vscode-test": "^1.3.0"
+	},
+	"dependencies": {
+		"compare-versions": "^3.6.0",
+		"find-process": "git+https://github.com/danielpinto8zz6/find-process.git",
+		"lookpath": "^1.0.6",
+		"kill-port-process": "^2.3.0"
+	}
+}
