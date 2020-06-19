@@ -28,5 +28,3 @@ jobs:
           PUBLISHER_TOKEN: ${{ secrets.PUBLISHER_TOKEN }}
         with:
           args: publish -p $PUBLISHER_TOKEN 
-      - name: Keep A Changelog - New Release
-        uses: thomaseizinger/keep-a-changelog-new-release@1.1.0
