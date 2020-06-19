@@ -192,5 +192,10 @@
 			"@semantic-release/github"
 		]
 	},
-	"private": true
+	"private": true,
+	"files": [
+	  "CHANGELOG.md",
+	  "package.json",
+	  "package-lock.json"
+	]
 }
