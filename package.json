@@ -2,7 +2,7 @@
 	"name": "jekyll-run",
 	"displayName": "Jekyll Run",
 	"description": "build and run your jekyll static website",
-	"version": "1.0.0",
+	"version": "1.1.0",
 	"engines": {
 		"vscode": "^1.46.0"
 	},
@@ -43,7 +43,7 @@
 				"command": "jekyll-run.Run",
 				"title": "Jekyll Run",
 				"category": "Jekyll",
-				"icon":{
+				"icon": {
 					"light": "./media/light/debug-start.svg",
 					"dark": "./media/dark/debug-start.svg"
 				}
