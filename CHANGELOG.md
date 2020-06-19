@@ -1,3 +1,10 @@
+# [1.3.0](https://github.com/Kanna727/jekyll-run/compare/v1.2.5...v1.3.0) (2020-06-19)
+
+
+### Features
+
+* open-in-browser ([695eb1c](https://github.com/Kanna727/jekyll-run/commit/695eb1c6aba67248a203bbb67fb732700668106b))
+
 ## [1.2.5](https://github.com/Kanna727/jekyll-run/compare/v1.2.4...v1.2.5) (2020-06-19)
 
 
