@@ -12,7 +12,7 @@ This extension can simply Run your Jekyll site locally and opens your site in br
 
 ## Features
 
-If a valid Jekyll Project is open:
+If a Jekyll Workspace is open:
 
 * You can run following commands from Command Palette/Keybindings:
 
