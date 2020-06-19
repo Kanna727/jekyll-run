@@ -4,7 +4,7 @@
 	"description": "Build and Run your Jekyll static website",
 	"version": "1.1.0",
 	"engines": {
-		"vscode": "^1.46.0"
+		"vscode": "^1.18.0"
 	},
 	"author": {
 		"name": "Prasanth Kanna",
@@ -159,7 +159,7 @@
 	"devDependencies": {
 		"semantic-release": "^17.0.8",
 		"@semantic-release/github": "^7.0.7",
-		"@types/vscode": "^1.46.0",
+		"@types/vscode": "^1.18.0",
 		"@types/glob": "^7.1.1",
 		"@types/mocha": "^7.0.2",
 		"@types/node": "^13.11.0",
