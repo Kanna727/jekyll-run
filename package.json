@@ -157,6 +157,7 @@
 		"test": "node ./out/test/runTest.js"
 	},
 	"devDependencies": {
+		"@semantic-release/github": "^7.0.7",
 		"@types/vscode": "^1.46.0",
 		"@types/glob": "^7.1.1",
 		"@types/mocha": "^7.0.2",
@@ -174,5 +175,21 @@
 		"find-process": "git+https://github.com/danielpinto8zz6/find-process.git",
 		"lookpath": "^1.0.6",
 		"kill-port-process": "^2.3.0"
-	}
+	},
+	"release": {
+		"branches": "master",
+		"verifyConditions": [
+			"@semantic-release/github"
+		],
+		"publish": [
+			"@semantic-release/github"
+		],
+		"success": [
+			"@semantic-release/github"
+		],
+		"fail": [
+			"@semantic-release/github"
+		]
+	},
+	"private": true,
 }
