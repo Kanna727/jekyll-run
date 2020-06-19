@@ -1,3 +1,7 @@
+[![Marketplace Version](https://vsmarketplacebadge.apphb.com/version-short/dedsec727.jekyll-run.svg)](https://marketplace.visualstudio.com/items?itemName=Dedsec727.jekyll-run)
+[![Downloads](https://vsmarketplacebadge.apphb.com/downloads/dedsec727.jekyll-run.svg)](https://marketplace.visualstudio.com/items?itemName=Dedsec727.jekyll-run)
+[![Rating](https://vsmarketplacebadge.apphb.com/rating-short/dedsec727.jekyll-run.svg)](https://marketplace.visualstudio.com/items?itemName=Dedsec727.jekyll-run)
+
 # VSCode Extension to Build & Run Jekyll Static Websites
 
 This extension can simply Run your Jekyll site locally and opens your site in browser
