@@ -5,14 +5,14 @@ export class Build {
     constructor() { }
 
     async build(workspaceRootPath: string) {
-        window.withProgress(
+        return await window.withProgress(
             {
                 location: ProgressLocation.Notification,
                 title: 'Jekyll Building',
                 cancellable: false,
             },
 
-            () => {
+            async () => {
                 return new Promise(function (resolve, reject) {
                     var child = spawn(`bundle exec jekyll build`, {
                         cwd: workspaceRootPath,

@@ -38,7 +38,8 @@
 		"onCommand:jekyll-run.Run",
 		"onCommand:jekyll-run.Build",
 		"onCommand:jekyll-run.Stop",
-		"onCommand:jekyll-run.Restart"
+		"onCommand:jekyll-run.Restart",
+		"onCommand:jekyll-run.Open"
 	],
 	"main": "./out/extension.js",
 	"contributes": {
@@ -55,6 +56,11 @@
 			{
 				"command": "jekyll-run.Build",
 				"title": "Jekyll Build",
+				"category": "Jekyll"
+			},
+			{
+				"command": "jekyll-run.Open",
+				"title": "Jekyll Open in Browser",
 				"category": "Jekyll"
 			},
 			{
@@ -80,35 +86,39 @@
 			"commandPalette": [
 				{
 					"command": "jekyll-run.Run",
-					"when": "jekyll-run"
+					"when": "jekyll-run&&!isRunning&&!isBuilding"
 				},
 				{
 					"command": "jekyll-run.Build",
-					"when": "jekyll-run"
+					"when": "jekyll-run&&!isRunning&&!isBuilding"
 				},
 				{
 					"command": "jekyll-run.Stop",
-					"when": "jekyll-run"
+					"when": "jekyll-run&&isRunning&&!isBuilding"
 				},
 				{
 					"command": "jekyll-run.Restart",
-					"when": "jekyll-run"
+					"when": "jekyll-run&&isRunning&&!isBuilding"
+				},
+				{
+					"command": "jekyll-run.Open",
+					"when": "jekyll-run&&isRunning&&!isBuilding"
 				}
 			],
 			"editor/title": [
 				{
 					"command": "jekyll-run.Run",
-					"when": "jekyll-run&&!isRunning",
+					"when": "jekyll-run&&!isRunning&&!isBuilding",
 					"group": "navigation@1"
 				},
 				{
 					"command": "jekyll-run.Stop",
-					"when": "jekyll-run&&isRunning",
+					"when": "jekyll-run&&isRunning&&!isBuilding",
 					"group": "navigation@2"
 				},
 				{
 					"command": "jekyll-run.Restart",
-					"when": "jekyll-run&&isRunning",
+					"when": "jekyll-run&&isRunning&&!isBuilding",
 					"group": "navigation@3"
 				}
 			]
@@ -120,7 +130,7 @@
 				"linux": "ctrl+f5",
 				"key": "ctrl+f5",
 				"command": "jekyll-run.Run",
-				"when": "jekyll-run"
+				"when": "jekyll-run&&!isRunning&&!isBuilding"
 			},
 			{
 				"mac": "cmd+f6",
@@ -128,23 +138,31 @@
 				"linux": "ctrl+f6",
 				"key": "ctrl+f6",
 				"command": "jekyll-run.Stop",
-				"when": "jekyll-run"
+				"when": "jekyll-run&&isRunning&&!isBuilding"
+			},
+			{
+				"mac": "cmd+f7",
+				"win": "ctrl+f7",
+				"linux": "ctrl+f7",
+				"key": "ctrl+f7",
+				"command": "jekyll-run.Restart",
+				"when": "jekyll-run&&isRunning&&!isBuilding"
 			},
 			{
 				"mac": "cmd+f8",
 				"win": "ctrl+f8",
 				"linux": "ctrl+f8",
 				"key": "ctrl+f8",
-				"command": "jekyll-run.Restart",
-				"when": "jekyll-run"
+				"command": "jekyll-run.Build",
+				"when": "jekyll-run&&!isRunning&&!isBuilding"
 			},
 			{
 				"mac": "cmd+f9",
 				"win": "ctrl+f9",
 				"linux": "ctrl+f9",
 				"key": "ctrl+f9",
-				"command": "jekyll-run.Build",
-				"when": "jekyll-run"
+				"command": "jekyll-run.Open",
+				"when": "jekyll-run&&isRunning&&!isBuilding"
 			}
 		]
 	},

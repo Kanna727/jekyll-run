@@ -6,6 +6,7 @@ import { lookpath } from 'lookpath';
 import { Run } from './cmds/run';
 import { Build } from './cmds/build';
 import { Stop } from './cmds/stop';
+import { openInBrowser } from './utils/open-in-browser';
 
 let currWorkspace: WorkspaceFolder | undefined;
 let pid: number = 0;
@@ -14,6 +15,7 @@ let isRunning = false;
 let runButton: StatusBarItem | undefined;
 let stopButton: StatusBarItem | undefined;
 let restartButton: StatusBarItem | undefined;
+let openInBrowserButton: StatusBarItem | undefined;
 
 interface IStatusBarItemAlignment {
     position: StatusBarAlignment;
@@ -108,21 +110,38 @@ function initRunButton() {
     runButton.show();
 }
 
+function initOpenInBrowserButton() {
+    const openInBrowserButtonAlignment: IStatusBarItemAlignment = {
+        position: StatusBarAlignment.Left,
+        offset: 500
+    };
+
+    const text: string = "Jekyll Open in Browser";
+
+    openInBrowserButton =
+        buildButton(openInBrowserButtonAlignment, "", "Jekyll Open in Browser", "jekyll-run.Open", text);
+    
+    openInBrowserButton.show();
+}
+
 function updateStatusBarItemsWhileRunning() {
     if (runButton) {
-        runButton.hide();
+        //runButton.hide();
         runButton.dispose();
         initStopButton();
         initRestartButton();
+        initOpenInBrowserButton();
     }
 }
 
 function revertStatusBarItems() {
-    if(stopButton && restartButton) {
+    if(stopButton && restartButton && openInBrowserButton) {
         stopButton.hide();
         stopButton.dispose();
         restartButton.hide();
         restartButton.dispose();
+        openInBrowserButton.hide();
+        openInBrowserButton.dispose();
     }
 
     initRunButton();
@@ -132,27 +151,46 @@ function revertStatusBarItems() {
 // your extension is activated the very first time the command is executed
 export function activate(context: ExtensionContext) {
 
+    const open = commands.registerCommand('jekyll-run.Open', async () => {
+        if (isStaticWebsiteWorkspace() && currWorkspace && isRunning) {
+            openInBrowser('http://127.0.0.1:4000/');
+        } else {
+            window.showErrorMessage('No instance of Jekyll is running');
+        }
+    });
+
     const run = commands.registerCommand('jekyll-run.Run', async () => {
         if (isStaticWebsiteWorkspace() && currWorkspace) {
-            if (await lookpath('jekyll')) {
-                if (await lookpath('bundle')) {
-                    isRunning = true;
-                    commands.executeCommand('setContext', 'isRunning', true);
-                    updateStatusBarItemsWhileRunning();
-                    const run = new Run();
-                    run.run(currWorkspace.uri.fsPath).
-                        catch((error) => {
-                            console.error(error);
-                            isRunning = false;
-                            commands.executeCommand('setContext', 'isRunning', false);
-                            revertStatusBarItems();
-                        }).
-                        finally(() => pid = run.pid);
+            if(!isRunning) {
+                if (await lookpath('jekyll')) {
+                    if (await lookpath('bundle')) {
+                        runButton?.hide();
+                        commands.executeCommand('setContext', 'isBuilding', true);
+                        const run = new Run();
+                        run.run(currWorkspace.uri.fsPath).
+                            then(() => {
+                                isRunning = true;
+                                commands.executeCommand('setContext', 'isRunning', true);
+                                updateStatusBarItemsWhileRunning();
+                            }).
+                            catch((error) => {
+                                console.error(error);
+                                isRunning = false;
+                                commands.executeCommand('setContext', 'isRunning', false);
+                                revertStatusBarItems();
+                            }).
+                            finally(() => {
+                                pid = run.pid;
+                                commands.executeCommand('setContext', 'isBuilding', false);
+                            });
+                    } else {
+                        window.showErrorMessage('Bundler not installed');
+                    }
                 } else {
-                    window.showErrorMessage('Bundler not installed');
+                    window.showErrorMessage('Jekyll not installed');
                 }
             } else {
-                window.showErrorMessage('Jekyll not installed');
+                window.showErrorMessage('Jekyll is already running');
             }
         } else {
             if (currWorkspace) {
@@ -167,8 +205,15 @@ export function activate(context: ExtensionContext) {
         if (isStaticWebsiteWorkspace() && currWorkspace) {
             if (await lookpath('jekyll')) {
                 if (await lookpath('bundle')) {
+                    commands.executeCommand('setContext', 'isBuilding', true);
+                    runButton?.hide();
                     const build = new Build();
-                    build.build(currWorkspace.uri.fsPath).catch((error) => console.error(error));
+                    build.build(currWorkspace.uri.fsPath).
+                        catch((error) => console.error(error)).
+                        finally(() => {
+                            commands.executeCommand('setContext', 'isBuilding', false);
+                            runButton?.show();
+                        });
                 } else {
                     window.showErrorMessage('Bundler not installed');
                 }
@@ -190,6 +235,7 @@ export function activate(context: ExtensionContext) {
             stop.Stop(pid).then(() => {
                 isRunning = false;
                 commands.executeCommand('setContext', 'isRunning', false);
+                commands.executeCommand('setContext', 'isBuilding', false);
                 revertStatusBarItems();
             });
         } else {
@@ -201,17 +247,31 @@ export function activate(context: ExtensionContext) {
         if (isStaticWebsiteWorkspace() && currWorkspace && isRunning) {
             const stop = new Stop();
             stop.Stop(pid);
-
+            //runButton?.hide();
+            stopButton?.hide();
+            stopButton?.dispose();
+            restartButton?.hide();
+            restartButton?.dispose();
+            openInBrowserButton?.hide();
+            openInBrowserButton?.dispose();
+            commands.executeCommand('setContext', 'isBuilding', true);
             const run = new Run();
             run.run(currWorkspace.uri.fsPath).
-                then(() => { }).
+                then(() => { 
+                    isRunning = true;
+                    commands.executeCommand('setContext', 'isRunning', true);
+                    updateStatusBarItemsWhileRunning();
+                }).
                 catch((error) => {
                     console.error(error);
                     isRunning = false;
                     commands.executeCommand('setContext', 'isRunning', false);
                     revertStatusBarItems();
                 }).
-                finally(() => pid = run.pid);
+                finally(() => {
+                    pid = run.pid;
+                    commands.executeCommand('setContext', 'isBuilding', false);
+                });
         } else {
             window.showErrorMessage('No instance of Jekyll is running');
         }
