@@ -12,7 +12,7 @@ This extension can simply Run your Jekyll site locally and opens your site in br
 
 If a valid Jekyll Project is open:
 
-* You can run following commands from Command Palette/Keybings:
+* You can run following commands from Command Palette/Keybindings:
 
   * Jekyll Build    &nbsp;&nbsp;&nbsp;&nbsp;(ctrl+F8) &nbsp;&nbsp;&nbsp;&nbsp; Builds project
   * Jekyll Run      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(ctrl+F5) &nbsp;&nbsp;&nbsp;&nbsp; Builds, Starts Jekyll Server & Opens the local hosted site in Browser
