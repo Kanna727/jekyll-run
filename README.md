@@ -1,6 +1,6 @@
 <p align="center">
     <img src="https://vsmarketplacebadge.apphb.com/version-short/dedsec727.jekyll-run.svg?label=Version" alt="Jekyll Run Version">
-    <img src="https://vsmarketplacebadge.apphb.com/downloads/dedsec727.jekyll-run.svg?label=Installs" alt="Jekyll Run Installs">
+    <img src="https://vsmarketplacebadge.apphb.com/downloads/dedsec727.jekyll-run.svg?label=Downloads" alt="Jekyll Run Installs">
     <img src="https://vsmarketplacebadge.apphb.com/rating-short/dedsec727.jekyll-run.svg?label=Rating" alt="Jekyll Run Rating">
 </p>
 
