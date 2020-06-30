@@ -5,6 +5,7 @@ import {
 } from 'vscode';
 import { spawn } from 'child_process';
 import { openInBrowser } from '../utils/open-in-browser';
+import { Stop } from '../cmds/stop';
 
 export class Run {
   pid: number = 0;
@@ -16,16 +17,23 @@ export class Run {
       {
         location: ProgressLocation.Notification,
         title: 'Jekyll Building...',
-        cancellable: false,
+        cancellable: true,
       },
-      async () => {
+      async (_progress, token) => {
         return new Promise( (resolve, reject) => {
           var child = spawn(`bundle exec jekyll serve`, {
             cwd: workspaceRootPath,
             shell: true,
           });
-
+          
+          console.log("Running on PID: " + child.pid);
           this.pid = child.pid;
+
+          token.onCancellationRequested(async () => {
+            console.log("User canceled. Stopping: " + child.pid);
+            spawn("taskkill", ["/pid", child.pid.toString(), '/f', '/t']);
+            reject();
+          });
 
           child.stdout.on('data',  (data) => {
             console.log('stdout: ' + data);

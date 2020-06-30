@@ -184,10 +184,16 @@ export function activate(context: ExtensionContext) {
                                 commands.executeCommand('setContext', 'isBuilding', false);
                             });
                     } else {
-                        window.showErrorMessage('Bundler not installed');
+                        window.showErrorMessage('Bundler not installed', 'Install Jekyll')
+                            .then(selection => {
+                                openInBrowser('https://jekyllrb.com/docs/installation/');
+                            });
                     }
                 } else {
-                    window.showErrorMessage('Jekyll not installed');
+                    window.showErrorMessage('Jekyll not installed', 'Install Jekyll')
+                        .then(selection => {
+                            openInBrowser('https://jekyllrb.com/docs/installation/');
+                        });
                 }
             } else {
                 window.showErrorMessage('Jekyll is already running');
