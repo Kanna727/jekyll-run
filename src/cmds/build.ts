@@ -21,7 +21,11 @@ export class Build {
 
                     token.onCancellationRequested(async () => {
                         console.log("User canceled. Stopping: " + child.pid);
-                        spawn("taskkill", ["/pid", child.pid.toString(), '/f', '/t']);
+                        if (process.platform === "win32") {
+                            spawn("taskkill", ["/pid", child.pid.toString(), '/f', '/t']);
+                        } else {
+                            spawn("kill", [child.pid.toString()]);
+                        }
                         reject();
                     });
 
