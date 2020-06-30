@@ -16,16 +16,27 @@ export class Run {
       {
         location: ProgressLocation.Notification,
         title: 'Jekyll Building...',
-        cancellable: false,
+        cancellable: true,
       },
-      async () => {
-        return new Promise( (resolve, reject) => {
+      async (_progress, token) => {
+        return new Promise((resolve, reject) => {
           var child = spawn(`bundle exec jekyll serve`, {
             cwd: workspaceRootPath,
             shell: true,
           });
-
+          
+          console.log("Running on PID: " + child.pid);
           this.pid = child.pid;
+
+          token.onCancellationRequested(async () => {
+            console.log("User canceled. Stopping: " + child.pid);
+            if (process.platform === "win32") {
+                            spawn("taskkill", ["/pid", child.pid.toString(), '/f', '/t']);
+                        } else {
+                            spawn("kill", [child.pid.toString()]);
+                        }
+            reject();
+          });
 
           child.stdout.on('data',  (data) => {
             console.log('stdout: ' + data);

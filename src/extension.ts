@@ -120,7 +120,7 @@ function initOpenInBrowserButton() {
 
     openInBrowserButton =
         buildButton(openInBrowserButtonAlignment, "", "Jekyll Open in Browser", "jekyll-run.Open", text);
-    
+
     openInBrowserButton.show();
 }
 
@@ -135,7 +135,7 @@ function updateStatusBarItemsWhileRunning() {
 }
 
 function revertStatusBarItems() {
-    if(stopButton && restartButton && openInBrowserButton) {
+    if (stopButton && restartButton && openInBrowserButton) {
         stopButton.hide();
         stopButton.dispose();
         restartButton.hide();
@@ -161,7 +161,7 @@ export function activate(context: ExtensionContext) {
 
     const run = commands.registerCommand('jekyll-run.Run', async () => {
         if (isStaticWebsiteWorkspace() && currWorkspace) {
-            if(!isRunning) {
+            if (!isRunning) {
                 if (await lookpath('jekyll')) {
                     if (await lookpath('bundle')) {
                         runButton?.hide();
@@ -184,10 +184,16 @@ export function activate(context: ExtensionContext) {
                                 commands.executeCommand('setContext', 'isBuilding', false);
                             });
                     } else {
-                        window.showErrorMessage('Bundler not installed');
+                        window.showErrorMessage('Bundler not installed', 'Install Jekyll')
+                            .then(selection => {
+                                openInBrowser('https://jekyllrb.com/docs/installation/');
+                            });
                     }
                 } else {
-                    window.showErrorMessage('Jekyll not installed');
+                    window.showErrorMessage('Jekyll not installed', 'Install Jekyll')
+                        .then(selection => {
+                            openInBrowser('https://jekyllrb.com/docs/installation/');
+                        });
                 }
             } else {
                 window.showErrorMessage('Jekyll is already running');
@@ -257,7 +263,7 @@ export function activate(context: ExtensionContext) {
             commands.executeCommand('setContext', 'isBuilding', true);
             const run = new Run();
             run.run(currWorkspace.uri.fsPath).
-                then(() => { 
+                then(() => {
                     isRunning = true;
                     commands.executeCommand('setContext', 'isRunning', true);
                     updateStatusBarItemsWhileRunning();

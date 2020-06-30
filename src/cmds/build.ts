@@ -9,14 +9,24 @@ export class Build {
             {
                 location: ProgressLocation.Notification,
                 title: 'Jekyll Building',
-                cancellable: false,
+                cancellable: true,
             },
 
-            async () => {
+            async (_progress, token) => {
                 return new Promise(function (resolve, reject) {
                     var child = spawn(`bundle exec jekyll build`, {
                         cwd: workspaceRootPath,
                         shell: true,
+                    });
+
+                    token.onCancellationRequested(async () => {
+                        console.log("User canceled. Stopping: " + child.pid);
+                        if (process.platform === "win32") {
+                            spawn("taskkill", ["/pid", child.pid.toString(), '/f', '/t']);
+                        } else {
+                            spawn("kill", [child.pid.toString()]);
+                        }
+                        reject();
                     });
 
                     child.stdout.on('data', function (data) {
@@ -28,13 +38,7 @@ export class Build {
                     });
                     child.on('close', function (code) {
                         console.log('closing code: ' + code);
-                        if (code === 0) {
-                            window.showInformationMessage('Built successfully!');
-                            resolve();
-                        } else {
-                            window.showErrorMessage('Error in building');
-                            reject();
-                        }
+                        resolve();
                     });
                 });
             },
