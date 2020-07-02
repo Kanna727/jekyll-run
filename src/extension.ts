@@ -269,7 +269,7 @@ export function activate(context: ExtensionContext) {
     const stop = commands.registerCommand('jekyll-run.Stop', async () => {
         if (isStaticWebsiteWorkspace() && currWorkspace && isRunning) {
             const stop = new Stop();
-            stop.Stop(pid).then(() => {
+            stop.Stop(pid, portInConfig).then(() => {
                 isRunning = false;
                 commands.executeCommand('setContext', 'isRunning', false);
                 commands.executeCommand('setContext', 'isBuilding', false);
@@ -283,7 +283,7 @@ export function activate(context: ExtensionContext) {
     const restart = commands.registerCommand('jekyll-run.Restart', async () => {
         if (isStaticWebsiteWorkspace() && currWorkspace && isRunning) {
             const stop = new Stop();
-            stop.Stop(pid);
+            stop.Stop(pid, portInConfig);
             //runButton?.hide();
             stopButton?.hide();
             stopButton?.dispose();
