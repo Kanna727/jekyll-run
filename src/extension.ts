@@ -161,6 +161,19 @@ export function activate(context: ExtensionContext) {
 
     const run = commands.registerCommand('jekyll-run.Run', async () => {
         if (isStaticWebsiteWorkspace() && currWorkspace) {
+            runButton?.hide();
+            const find = require('find-process');
+            let portIsOccupiedBy: String;
+            await find('port', 4000)
+                .then(function (list: any) {
+                    if (!list.length) {
+                        console.log('port 4000 is free now');
+                    } else {
+                        console.log('%s is listening port 4000', list[0].name);
+                        isRunning = true;
+                        portIsOccupiedBy = list[0].name.toString();
+                    }
+                });
             if (!isRunning) {
                 if (await lookpath('jekyll')) {
                     if (await lookpath('bundle')) {
