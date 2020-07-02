@@ -236,7 +236,6 @@
 	},
 	"private": true,
 	"files": [
-		"CHANGELOG.md",
 		"package.json",
 		"package-lock.json"
 	]
