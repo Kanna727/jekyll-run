@@ -1,3 +1,10 @@
+# [1.4.0](https://github.com/Kanna727/jekyll-run/compare/v1.3.0...v1.4.0) (2020-07-02)
+
+
+### Features
+
+* checks if jekyll is running ([61a04c5](https://github.com/Kanna727/jekyll-run/commit/61a04c5631e11201212439e16876f167e28514d6))
+
 # [1.3.1](https://github.com/Kanna727/jekyll-run/compare/v1.3.0...v1.3.1) (2020-07-01)
 
 
