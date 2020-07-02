@@ -173,15 +173,15 @@ export function activate(context: ExtensionContext) {
         if (isStaticWebsiteWorkspace() && currWorkspace) {
             runButton?.hide();
             const find = require('find-process');
-            let portIsOccupiedBy: String;
-            await find('port', 4000)
+            let portIsOccupiedBy: String = '';
+            await find('port', portInConfig)
                 .then(function (list: any) {
                     if (!list.length) {
-                        console.log('port 4000 is free now');
+                        console.log('port ' + portInConfig + 'is free');
                     } else {
-                        console.log('%s is listening port 4000', list[0].name);
                         isRunning = true;
                         portIsOccupiedBy = list[0].name.toString();
+                        pid = list[0].pid;
                     }
                 });
             if (!isRunning) {
@@ -219,7 +219,15 @@ export function activate(context: ExtensionContext) {
                         });
                 }
             } else {
-                window.showErrorMessage('Jekyll is already running');
+                if (portIsOccupiedBy === 'ruby.exe') {
+                    openLocalJekyllSite(portInConfig);
+                    isRunning = true;
+                    commands.executeCommand('setContext', 'isRunning', true);
+                    updateStatusBarItemsWhileRunning();
+                }
+                else {
+                    window.showErrorMessage('Port ' + portInConfig + ' is already occupied by process: ' + portIsOccupiedBy + ' Either kill that process or use another port in _config.yml');
+                }
             }
         } else {
             if (currWorkspace) {
