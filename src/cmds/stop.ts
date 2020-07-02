@@ -3,7 +3,7 @@ import { window, ProgressLocation } from "vscode";
 export class Stop {
     constructor() { }
     
-    async Stop(pid: number) {
+    async Stop(pid: number, port: number) {
         return await window.withProgress(
             {
                 location: ProgressLocation.Notification,
@@ -15,10 +15,9 @@ export class Stop {
                     console.log('stopping: ' + pid);
                     process.kill(pid);
                     const { killPortProcess } = require('kill-port-process');
-                    const PORT = 4000;
 
                     (async () => {
-                        await killPortProcess(PORT);
+                        await killPortProcess(port);
                     })().then(() => resolve());
                 });
             }
