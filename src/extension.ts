@@ -231,7 +231,7 @@ export function activate(context: ExtensionContext) {
             }
         } else {
             if (currWorkspace) {
-                window.showInformationMessage('The workspace/folder: ' + currWorkspace.name + ' is not Jekyll compatible');
+                window.showInformationMessage('Either the workspace/folder: ' + currWorkspace.name + ' is not Jekyll compatible or the opened file is not part of the Jekyll folder');
             } else {
                 window.showErrorMessage('No active workspace/folder');
             }
@@ -267,7 +267,7 @@ export function activate(context: ExtensionContext) {
     });
 
     const stop = commands.registerCommand('jekyll-run.Stop', async () => {
-        if (isStaticWebsiteWorkspace() && currWorkspace && isRunning) {
+        if (currWorkspace && isRunning) {
             const stop = new Stop();
             stop.Stop(pid, portInConfig).then(() => {
                 isRunning = false;
@@ -281,7 +281,7 @@ export function activate(context: ExtensionContext) {
     });
 
     const restart = commands.registerCommand('jekyll-run.Restart', async () => {
-        if (isStaticWebsiteWorkspace() && currWorkspace && isRunning) {
+        if (currWorkspace && isRunning) {
             const stop = new Stop();
             stop.Stop(pid, portInConfig);
             //runButton?.hide();
