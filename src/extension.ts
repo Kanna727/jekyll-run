@@ -171,6 +171,19 @@ export function activate(context: ExtensionContext) {
 
     const run = commands.registerCommand('jekyll-run.Run', async () => {
         if (isStaticWebsiteWorkspace() && currWorkspace) {
+            runButton?.hide();
+            const find = require('find-process');
+            let portIsOccupiedBy: String = '';
+            await find('port', portInConfig)
+                .then(function (list: any) {
+                    if (!list.length) {
+                        console.log('port ' + portInConfig + 'is free');
+                    } else {
+                        isRunning = true;
+                        portIsOccupiedBy = list[0].name.toString();
+                        pid = list[0].pid;
+                    }
+                });
             if (!isRunning) {
                 if (await lookpath('jekyll')) {
                     if (await lookpath('bundle')) {
@@ -206,11 +219,19 @@ export function activate(context: ExtensionContext) {
                         });
                 }
             } else {
-                window.showErrorMessage('Jekyll is already running');
+                if (portIsOccupiedBy === 'ruby.exe') {
+                    openLocalJekyllSite(portInConfig);
+                    isRunning = true;
+                    commands.executeCommand('setContext', 'isRunning', true);
+                    updateStatusBarItemsWhileRunning();
+                }
+                else {
+                    window.showErrorMessage('Port ' + portInConfig + ' is already occupied by process: ' + portIsOccupiedBy + ' Either kill that process or use another port in _config.yml');
+                }
             }
         } else {
             if (currWorkspace) {
-                window.showInformationMessage('The workspace/folder: ' + currWorkspace.name + ' is not Jekyll compatible');
+                window.showInformationMessage('Either the workspace/folder: ' + currWorkspace.name + ' is not Jekyll compatible or the opened file is not part of the Jekyll folder');
             } else {
                 window.showErrorMessage('No active workspace/folder');
             }
@@ -246,7 +267,7 @@ export function activate(context: ExtensionContext) {
     });
 
     const stop = commands.registerCommand('jekyll-run.Stop', async () => {
-        if (isStaticWebsiteWorkspace() && currWorkspace && isRunning) {
+        if (currWorkspace && isRunning) {
             const stop = new Stop();
             stop.Stop(pid, portInConfig).then(() => {
                 isRunning = false;
@@ -260,7 +281,7 @@ export function activate(context: ExtensionContext) {
     });
 
     const restart = commands.registerCommand('jekyll-run.Restart', async () => {
-        if (isStaticWebsiteWorkspace() && currWorkspace && isRunning) {
+        if (currWorkspace && isRunning) {
             const stop = new Stop();
             stop.Stop(pid, portInConfig);
             //runButton?.hide();
