@@ -199,7 +199,8 @@
 		"compare-versions": "^3.6.0",
 		"find-process": "git+https://github.com/danielpinto8zz6/find-process.git",
 		"kill-port-process": "^2.3.0",
-		"lookpath": "^1.0.6"
+		"lookpath": "^1.0.6",
+		"read-yaml": "^1.1.0"
 	},
 	"release": {
 		"branches": "master",

@@ -4,14 +4,14 @@ import {
   StatusBarAlignment,
 } from 'vscode';
 import { spawn } from 'child_process';
-import { openInBrowser } from '../utils/open-in-browser';
+import { openLocalJekyllSite } from '../utils/open-in-browser';
 
 export class Run {
   pid: number = 0;
   regenerateStatus = window.createStatusBarItem(StatusBarAlignment.Left, 497);
   constructor() {}
 
-  async run(workspaceRootPath: string) {
+  async run(workspaceRootPath: string, portInConfig: number) {
     return await window.withProgress(
       {
         location: ProgressLocation.Notification,
@@ -42,7 +42,7 @@ export class Run {
             console.log('stdout: ' + data);
             var strString = data.toString();
             if (strString.includes('Server running')) {
-              openInBrowser('http://127.0.0.1:4000/');
+              openLocalJekyllSite(portInConfig);
               resolve();
             }
             else if (strString.includes('Regenerating')) {
