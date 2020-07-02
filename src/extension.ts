@@ -6,11 +6,12 @@ import { lookpath } from 'lookpath';
 import { Run } from './cmds/run';
 import { Build } from './cmds/build';
 import { Stop } from './cmds/stop';
-import { openInBrowser } from './utils/open-in-browser';
+import { openUrl, openLocalJekyllSite } from './utils/open-in-browser';
 
 let currWorkspace: WorkspaceFolder | undefined;
 let pid: number = 0;
 let isRunning = false;
+let portInConfig = 4000;
 
 let runButton: StatusBarItem | undefined;
 let stopButton: StatusBarItem | undefined;
@@ -26,6 +27,19 @@ enum Icons {
     Start = " $(debug-start) ",
     Stop = "$(debug-stop)",
     Restart = "$(debug-restart)"
+}
+
+function checkConfigAndGetPort(currWorkspace: WorkspaceFolder): boolean{
+    const configPath = currWorkspace.uri.fsPath + '\\_config.yml';
+    if (existsSync(configPath)) {
+        var read = require('read-yaml');
+        var config = read.sync(configPath);
+
+        console.log(config);
+        if (config.port !== undefined) { portInConfig = config.port; }
+        return true;
+    }
+    return false;
 }
 
 function isStaticWebsiteWorkspace(): boolean {
@@ -44,17 +58,13 @@ function isStaticWebsiteWorkspace(): boolean {
         if (resource.scheme === 'file') {
             currWorkspace = workspace.getWorkspaceFolder(resource);
             if (currWorkspace) {
-                if (existsSync(currWorkspace.uri.fsPath + '/_config.yml')) {
-                    return true;
-                }
+                return checkConfigAndGetPort(currWorkspace);
             }
         }
     } else {
         currWorkspace = workspace.workspaceFolders[0];
         if (currWorkspace) {
-            if (existsSync(currWorkspace.uri.fsPath + '/_config.yml')) {
-                return true;
-            }
+            return checkConfigAndGetPort(currWorkspace);
         }
     }
     return false;
@@ -153,7 +163,7 @@ export function activate(context: ExtensionContext) {
 
     const open = commands.registerCommand('jekyll-run.Open', async () => {
         if (isStaticWebsiteWorkspace() && currWorkspace && isRunning) {
-            openInBrowser('http://127.0.0.1:4000/');
+            openLocalJekyllSite(portInConfig);
         } else {
             window.showErrorMessage('No instance of Jekyll is running');
         }
@@ -180,7 +190,7 @@ export function activate(context: ExtensionContext) {
                         runButton?.hide();
                         commands.executeCommand('setContext', 'isBuilding', true);
                         const run = new Run();
-                        run.run(currWorkspace.uri.fsPath).
+                        run.run(currWorkspace.uri.fsPath, portInConfig).
                             then(() => {
                                 isRunning = true;
                                 commands.executeCommand('setContext', 'isRunning', true);
@@ -199,13 +209,13 @@ export function activate(context: ExtensionContext) {
                     } else {
                         window.showErrorMessage('Bundler not installed', 'Install Jekyll')
                             .then(selection => {
-                                openInBrowser('https://jekyllrb.com/docs/installation/');
+                                openUrl('https://jekyllrb.com/docs/installation/');
                             });
                     }
                 } else {
                     window.showErrorMessage('Jekyll not installed', 'Install Jekyll')
                         .then(selection => {
-                            openInBrowser('https://jekyllrb.com/docs/installation/');
+                            openUrl('https://jekyllrb.com/docs/installation/');
                         });
                 }
             } else {
@@ -275,7 +285,7 @@ export function activate(context: ExtensionContext) {
             openInBrowserButton?.dispose();
             commands.executeCommand('setContext', 'isBuilding', true);
             const run = new Run();
-            run.run(currWorkspace.uri.fsPath).
+            run.run(currWorkspace.uri.fsPath, portInConfig).
                 then(() => {
                     isRunning = true;
                     commands.executeCommand('setContext', 'isRunning', true);
