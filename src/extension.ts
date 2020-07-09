@@ -7,6 +7,7 @@ import { Run } from './cmds/run';
 import { Build } from './cmds/build';
 import { Stop } from './cmds/stop';
 import { openUrl, openLocalJekyllSite } from './utils/open-in-browser';
+import path = require('path');
 
 let currWorkspace: WorkspaceFolder | undefined;
 let pid: number = 0;
@@ -30,7 +31,7 @@ enum Icons {
 }
 
 function checkConfigAndGetPort(currWorkspace: WorkspaceFolder): boolean{
-    const configPath = currWorkspace.uri.fsPath + '\\_config.yml';
+    const configPath = path.join(currWorkspace.uri.fsPath, '_config.yml');
     if (existsSync(configPath)) {
         var read = require('read-yaml');
         var config = read.sync(configPath);
