@@ -172,6 +172,7 @@ export function activate(context: ExtensionContext) {
 
     const run = commands.registerCommand('jekyll-run.Run', async () => {
         if (isStaticWebsiteWorkspace() && currWorkspace) {
+            commands.executeCommand('setContext', 'isRunning', true);
             runButton?.hide();
             const find = require('find-process');
             let portIsOccupiedBy: String = '';
@@ -186,8 +187,8 @@ export function activate(context: ExtensionContext) {
                     }
                 });
             if (!isRunning) {
-                if (await lookpath('jekyll')) {
-                    if (await lookpath('bundle')) {
+                if (!(await lookpath("jekyll"))?.startsWith('/mnt')) {
+                    if (!(await lookpath("bundle"))?.startsWith('/mnt')) {
                         runButton?.hide();
                         commands.executeCommand('setContext', 'isBuilding', true);
                         const run = new Run();
@@ -208,15 +209,19 @@ export function activate(context: ExtensionContext) {
                                 commands.executeCommand('setContext', 'isBuilding', false);
                             });
                     } else {
+                        commands.executeCommand('setContext', 'isRunning', false);
+                        runButton?.show();
                         window.showErrorMessage('Bundler not installed', 'Install Jekyll')
                             .then(selection => {
-                                openUrl('https://jekyllrb.com/docs/installation/');
+                                if(selection != undefined) openUrl('https://jekyllrb.com/docs/installation/');
                             });
                     }
                 } else {
+                    commands.executeCommand('setContext', 'isRunning', false);
+                    runButton?.show();
                     window.showErrorMessage('Jekyll not installed', 'Install Jekyll')
                         .then(selection => {
-                            openUrl('https://jekyllrb.com/docs/installation/');
+                            if(selection != undefined) openUrl('https://jekyllrb.com/docs/installation/');
                         });
                 }
             } else {
@@ -227,6 +232,8 @@ export function activate(context: ExtensionContext) {
                     updateStatusBarItemsWhileRunning();
                 }
                 else {
+                    commands.executeCommand('setContext', 'isRunning', false);
+                    runButton?.show();
                     window.showErrorMessage('Port ' + portInConfig + ' is already occupied by process: ' + portIsOccupiedBy + ' Either kill that process or use another port in _config.yml');
                 }
             }
