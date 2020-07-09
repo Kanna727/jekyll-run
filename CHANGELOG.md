@@ -1,3 +1,10 @@
+## [1.4.1](https://github.com/Kanna727/jekyll-run/compare/v1.4.0...v1.4.1) (2020-07-09)
+
+
+### Bug Fixes
+
+* issue [#8](https://github.com/Kanna727/jekyll-run/issues/8) ([132879f](https://github.com/Kanna727/jekyll-run/commit/132879f75cc984a0284630ec6dae34114db75047))
+
 # [1.4.0](https://github.com/Kanna727/jekyll-run/compare/v1.3.0...v1.4.0) (2020-07-02)
 
 
