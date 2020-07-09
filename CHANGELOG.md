@@ -1,3 +1,11 @@
+## [1.4.2](https://github.com/Kanna727/jekyll-run/compare/v1.4.1...v1.4.2) (2020-07-09)
+
+
+### Bug Fixes
+
+* bug fixes ([08e6257](https://github.com/Kanna727/jekyll-run/commit/08e62571931b6968e355856b5697d62c34d4bc5f))
+* jekyll checking fails in WSL ([298c6b5](https://github.com/Kanna727/jekyll-run/commit/298c6b5d51042021799b15ee37c84a86573f9020))
+
 ## [1.4.1](https://github.com/Kanna727/jekyll-run/compare/v1.4.0...v1.4.1) (2020-07-09)
 
 
