@@ -1,4 +1,5 @@
 /.vscode
 /.vscodeignore
+/.vscode-test
 /node_modules
 /out
