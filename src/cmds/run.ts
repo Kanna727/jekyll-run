@@ -2,16 +2,18 @@ import {
   window,
   ProgressLocation,
   StatusBarAlignment,
+  OutputChannel,
 } from 'vscode';
 import { spawn } from 'child_process';
 import { openLocalJekyllSite } from '../utils/open-in-browser';
+import { Stop } from './stop';
 
 export class Run {
   pid: number = 0;
   regenerateStatus = window.createStatusBarItem(StatusBarAlignment.Left, 497);
-  constructor() {}
+  constructor() { }
 
-  async run(workspaceRootPath: string, portInConfig: number) {
+  async run(workspaceRootPath: string, portInConfig: number, outputChannel: OutputChannel) {
     return await window.withProgress(
       {
         location: ProgressLocation.Notification,
@@ -24,23 +26,22 @@ export class Run {
             cwd: workspaceRootPath,
             shell: true,
           });
-          
+
           console.log("Running on PID: " + child.pid);
           this.pid = child.pid;
 
           token.onCancellationRequested(async () => {
             console.log("User canceled. Stopping: " + child.pid);
-            if (process.platform === "win32") {
-                            spawn("taskkill", ["/pid", child.pid.toString(), '/f', '/t']);
-                        } else {
-                            spawn("kill", [child.pid.toString()]);
-                        }
+            const stop = new Stop();
+            await stop.Stop(this.pid, outputChannel);
             reject();
           });
 
-          child.stdout.on('data',  (data) => {
+          child.stdout.on('data', (data) => {
             console.log('stdout: ' + data);
             var strString = data.toString();
+            outputChannel.append(strString);
+            outputChannel.show();
             if (strString.includes('Server running')) {
               openLocalJekyllSite(portInConfig);
               resolve();
@@ -49,16 +50,20 @@ export class Run {
               this.regenerateStatus.text = 'Jekyll Regenerating...';
               this.regenerateStatus.show();
             }
-            else if (strString.includes('...done')) {;
+            else if (strString.includes('...done')) {
               this.regenerateStatus.hide();
             }
           });
-          child.stderr.on('data', function (data) {
-            console.log('stderr: ' + data);
-            reject();
+          child.stderr.on('data', (data) => {
+            if(data.toString().includes('Error')){
+              console.log('stderr: ' + data);
+              this.regenerateStatus.hide();
+              reject(data);
+            }
           });
-          child.on('close', function (code) {
+          child.on('close', (code) => {
             console.log('closing code: ' + code);
+            this.regenerateStatus.hide();
             resolve();
           });
         });

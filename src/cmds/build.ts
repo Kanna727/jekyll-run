@@ -1,10 +1,11 @@
-import { spawn, ChildProcessWithoutNullStreams } from 'child_process';
-import { window, workspace, ProgressLocation } from 'vscode';
+import { spawn } from 'child_process';
+import { window, ProgressLocation, OutputChannel } from 'vscode';
+import { Stop } from './stop';
 
 export class Build {
     constructor() { }
 
-    async build(workspaceRootPath: string) {
+    async build(workspaceRootPath: string, outputChannel: OutputChannel) {
         return await window.withProgress(
             {
                 location: ProgressLocation.Notification,
@@ -21,11 +22,8 @@ export class Build {
 
                     token.onCancellationRequested(async () => {
                         console.log("User canceled. Stopping: " + child.pid);
-                        if (process.platform === "win32") {
-                            spawn("taskkill", ["/pid", child.pid.toString(), '/f', '/t']);
-                        } else {
-                            spawn("kill", [child.pid.toString()]);
-                        }
+                        const stop = new Stop();
+                        await stop.Stop(child.pid, outputChannel);
                         reject();
                     });
 
