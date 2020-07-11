@@ -1,3 +1,10 @@
+## [1.4.3](https://github.com/Kanna727/jekyll-run/compare/v1.4.2...v1.4.3) (2020-07-11)
+
+
+### Bug Fixes
+
+* major bug fixes where extension is not working in linux and mac ([d4a10dd](https://github.com/Kanna727/jekyll-run/commit/d4a10dd36ede72c28f4ef9239db0d57b5f41dd00))
+
 ## [1.4.2](https://github.com/Kanna727/jekyll-run/compare/v1.4.1...v1.4.2) (2020-07-09)
 
 
