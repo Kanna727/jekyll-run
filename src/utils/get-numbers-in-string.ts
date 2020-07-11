@@ -3,7 +3,7 @@ export function getNumbersInString(str: string): number[]{
         trim().
         split(' ').
         filter((value) => {
-            return value !== '';
+            return value !== '' && value !== '0';
         }).
         filter((value) => {
             return /^\d+$/.test(value.trim());

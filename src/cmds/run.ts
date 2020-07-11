@@ -41,7 +41,7 @@ export class Run {
             console.log('stdout: ' + data);
             var strString = data.toString();
             outputChannel.append(strString);
-            outputChannel.show();
+            outputChannel.show(true);
             if (strString.includes('Server running')) {
               openLocalJekyllSite(portInConfig);
               resolve();

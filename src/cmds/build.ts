@@ -29,10 +29,15 @@ export class Build {
 
                     child.stdout.on('data', function (data) {
                         console.log('stdout: ' + data);
+                        var strString = data.toString();
+                        outputChannel.append(strString);
+                        outputChannel.show(true);
                     });
                     child.stderr.on('data', function (data) {
-                        console.log('stderr: ' + data);
-                        reject();
+                        if(data.toString().includes('Error')){
+                            console.log('stderr: ' + data);
+                            reject(data);
+                          }
                     });
                     child.on('close', function (code) {
                         console.log('closing code: ' + code);

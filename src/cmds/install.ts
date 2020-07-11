@@ -24,7 +24,7 @@ export class Install {
                         console.log('stdout: ' + data);
                         var strString = data.toString();
                         outputChannel.append(strString);
-                        outputChannel.show();
+                        outputChannel.show(true);
                       });
                       child.stderr.on('data',  (data) => {
                         console.log('stderr: ' + data);

@@ -1,15 +1,12 @@
 import { executeCMD } from "./exec-cmd";
 
 export function findProcessName(pid: number): Promise<string> {
-  return new Promise((resolve) => {
-    if (process.platform === 'win32') {
-      executeCMD('tasklist /fi "pid eq ' + pid + '" /fo csv /NH')
-        .then((output) => resolve(output.split(',')[0]))
-        .catch(() => resolve(''));
+  return new Promise(async (resolve) => {
+    var output = await executeCMD('tasklist /fi "pid eq ' + pid + '" /fo csv /NH');
+    if(output !== 'error'){
+      resolve(output.split(',')[0]);
     } else {
-      executeCMD('ps -q ' + pid + ' -o comm=')
-        .then((output) => resolve(output))
-        .catch(() => resolve(''));
+      resolve('');
     }
   });
 }

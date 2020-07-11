@@ -1,6 +1,6 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
-import { ExtensionContext, commands, window, Terminal, StatusBarAlignment, StatusBarItem, workspace, WorkspaceFolder } from 'vscode';
+import { ExtensionContext, commands, window, StatusBarAlignment, StatusBarItem, workspace, WorkspaceFolder } from 'vscode';
 import { existsSync } from 'fs';
 import { lookpath } from './utils/look-path';
 import { Run } from './cmds/run';
@@ -9,8 +9,7 @@ import { Stop } from './cmds/stop';
 import { openUrl, openLocalJekyllSite } from './utils/open-in-browser';
 import path = require('path');
 import { Install } from './cmds/install';
-import { findPidByPort } from './utils/pid-on-port';
-import { findProcessName } from './utils/process-at-pid';
+import { findProcessOnPort } from './utils/process-on-port';
 
 let currWorkspace: WorkspaceFolder | undefined;
 let pid: number = 0;
@@ -191,13 +190,15 @@ export function activate(context: ExtensionContext) {
 
     const run = commands.registerCommand('jekyll-run.Run', async () => {
         if (isStaticWebsiteWorkspace() && currWorkspace) {
+            outputChannel.appendLine('Starting Server...');
+            outputChannel.show(true);
             commands.executeCommand('setContext', 'isBuilding', true);
             runButton?.hide();
-            let portIsOccupiedByPID = await findPidByPort(portInConfig);
-            let portIsOccupiedByName = '';
-            if(portIsOccupiedByPID !== 0){
+            outputChannel.appendLine('Checking if server is already running...');
+            outputChannel.show(true);
+            var processOnPort = await findProcessOnPort(portInConfig);
+            if (processOnPort.pid !== 0) {
                 isRunning = true;
-                portIsOccupiedByName = await findProcessName(portIsOccupiedByPID);
             }
             if (!isRunning) {
                 if (!(await lookpath("jekyll"))?.startsWith('/mnt')) {
@@ -207,7 +208,6 @@ export function activate(context: ExtensionContext) {
                             then(() => {
                                 isRunning = true;
                                 commands.executeCommand('setContext', 'isRunning', true);
-                                commands.executeCommand('setContext', 'isBuilding', false);
                                 updateStatusBarItemsWhileRunning();
                             }).
                             catch((error) => {
@@ -221,7 +221,6 @@ export function activate(context: ExtensionContext) {
                                             }
                                         });
                                 }
-                                commands.executeCommand('setContext', 'isBuilding', false);
                                 revertStatusBarItems();
                             }).
                             finally(() => {
@@ -233,7 +232,9 @@ export function activate(context: ExtensionContext) {
                         runButton?.show();
                         window.showErrorMessage('Bundler not installed', 'Install Jekyll')
                             .then(selection => {
-                                if (selection !== undefined) openUrl('https://jekyllrb.com/docs/installation/');
+                                if (selection !== undefined) {
+                                    openUrl('https://jekyllrb.com/docs/installation/');
+                                }
                             });
                     }
                 } else {
@@ -241,12 +242,16 @@ export function activate(context: ExtensionContext) {
                     runButton?.show();
                     window.showErrorMessage('Jekyll not installed', 'Install Jekyll')
                         .then(selection => {
-                            if (selection !== undefined) openUrl('https://jekyllrb.com/docs/installation/');
+                            if (selection !== undefined) {
+                                openUrl('https://jekyllrb.com/docs/installation/');
+                            }
                         });
                 }
             } else {
-                if (portIsOccupiedByName.includes('ruby')) {
-                    pid = portIsOccupiedByPID;
+                if (processOnPort.name.includes('ruby')) {
+                    pid = processOnPort.pid;
+                    outputChannel.appendLine('Server is already running. Opening your site...');
+                    outputChannel.show(true);
                     openLocalJekyllSite(portInConfig);
                     isRunning = true;
                     commands.executeCommand('setContext', 'isRunning', true);
@@ -256,7 +261,7 @@ export function activate(context: ExtensionContext) {
                 else {
                     commands.executeCommand('setContext', 'isBuilding', false);
                     runButton?.show();
-                    window.showErrorMessage('Port ' + portInConfig + ' is already occupied by process: ' + portIsOccupiedByName + ' Either kill that process or use another port in _config.yml');
+                    window.showErrorMessage('Port ' + portInConfig + ' is already occupied by process: ' + processOnPort.pid + ' Either kill that process or use another port in _config.yml');
                 }
             }
         } else {
@@ -276,7 +281,19 @@ export function activate(context: ExtensionContext) {
                     runButton?.hide();
                     const build = new Build();
                     build.build(currWorkspace.uri.fsPath, outputChannel).
-                        catch((error) => console.error(error)).
+                        catch((error) => {
+                            console.error(error);
+                            if (error !== undefined) {
+                                var strString = error.toString().split('\n')[0];
+                                window.showErrorMessage(strString, 'Run bundle install')
+                                    .then(selection => {
+                                        if (selection !== undefined && currWorkspace) {
+                                            runBundleInstall(currWorkspace);
+                                        }
+                                    });
+                            }
+                            revertStatusBarItems();
+                        }).
                         finally(() => {
                             commands.executeCommand('setContext', 'isBuilding', false);
                             runButton?.show();
@@ -286,7 +303,9 @@ export function activate(context: ExtensionContext) {
                     runButton?.show();
                     window.showErrorMessage('Bundler not installed', 'Install Jekyll')
                         .then(selection => {
-                            if (selection !== undefined) openUrl('https://jekyllrb.com/docs/installation/');
+                            if (selection !== undefined) {
+                                openUrl('https://jekyllrb.com/docs/installation/');
+                            }
                         });
                 }
             } else {
@@ -294,7 +313,9 @@ export function activate(context: ExtensionContext) {
                 runButton?.show();
                 window.showErrorMessage('Jekyll not installed', 'Install Jekyll')
                     .then(selection => {
-                        if (selection !== undefined) openUrl('https://jekyllrb.com/docs/installation/');
+                        if (selection !== undefined) {
+                            openUrl('https://jekyllrb.com/docs/installation/');
+                        }
                     });
             }
         } else {
@@ -337,7 +358,6 @@ export function activate(context: ExtensionContext) {
                 then(() => {
                     isRunning = true;
                     commands.executeCommand('setContext', 'isRunning', true);
-                    commands.executeCommand('setContext', 'isBuilding', false);
                     updateStatusBarItemsWhileRunning();
                 }).
                 catch((error) => {
@@ -351,7 +371,6 @@ export function activate(context: ExtensionContext) {
                                 }
                             });
                     }
-                    commands.executeCommand('setContext', 'isBuilding', false);
                     revertStatusBarItems();
                 }).
                 finally(() => {

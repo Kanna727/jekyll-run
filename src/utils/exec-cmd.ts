@@ -4,7 +4,7 @@ export function executeCMD(cmd: string): Promise<string> {
     return new Promise((resolve, reject) => {
         exec(cmd, function (err, stdout, stderr) {
             if (err) {
-                reject(err.toString());
+                resolve('error');
             } else {
                 resolve(stdout.toString());
             }
