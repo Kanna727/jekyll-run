@@ -1,5 +1,6 @@
 import { window, ProgressLocation, OutputChannel } from "vscode";
 import { childrenOfPid } from "../utils/process-group";
+import { executeCMD } from "../utils/exec-cmd";
 
 export class Stop {
     constructor() { }
@@ -12,13 +13,9 @@ export class Stop {
                 cancellable: false,
             },
             async () => {
-                return new Promise(async (resolve, _reject) => {
+                return new Promise(async (resolve) => {
                     console.log('stopping: ' + pid);
-                    var childrenPID = await childrenOfPid(pid);
-                    childrenPID.forEach(childPID => {
-                        process.kill(childPID);
-                    });
-                    process.kill(pid);
+                    await executeCMD('TASKKILL /F /T /PID ' + pid);
                     outputChannel.appendLine('Server Stopped');
                     outputChannel.show();
                     resolve();
