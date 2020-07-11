@@ -14,10 +14,11 @@ export class Stop {
             async () => {
                 return new Promise(async (resolve) => {
                     console.log('stopping: ' + pid);
-                    await killProcessAndChildren(pid);
-                    outputChannel.appendLine('Server Stopped');
-                    outputChannel.show(true);
-                    resolve();
+                    killProcessAndChildren(pid).finally(() => {
+                        outputChannel.appendLine('Server Stopped');
+                        outputChannel.show(true);
+                        resolve();
+                    });
                 });
             }
         );

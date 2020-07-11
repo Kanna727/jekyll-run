@@ -168,6 +168,8 @@ function runBundleInstall(currWorkspace: WorkspaceFolder) {
     install.Install(currWorkspace.uri.fsPath, outputChannel).
         then(() => {
             commands.executeCommand('jekyll-run.Run');
+        }, (error) => {
+            console.error(error);
         }).
         catch((error) => {
             console.error(error);
@@ -209,10 +211,22 @@ export function activate(context: ExtensionContext) {
                                 isRunning = true;
                                 commands.executeCommand('setContext', 'isRunning', true);
                                 updateStatusBarItemsWhileRunning();
+                            }, (error) => {
+                                    console.error(error);
+                                    if (error !== undefined && error !== '') {
+                                        var strString = error.toString().split('\n')[0];
+                                        window.showErrorMessage(strString, 'Run bundle install')
+                                            .then(selection => {
+                                                if (selection !== undefined && currWorkspace) {
+                                                    runBundleInstall(currWorkspace);
+                                                }
+                                            });
+                                    }
+                                    revertStatusBarItems();    
                             }).
                             catch((error) => {
                                 console.error(error);
-                                if (error !== undefined) {
+                                if (error !== undefined && error !== '') {
                                     var strString = error.toString().split('\n')[0];
                                     window.showErrorMessage(strString, 'Run bundle install')
                                         .then(selection => {
@@ -359,6 +373,18 @@ export function activate(context: ExtensionContext) {
                     isRunning = true;
                     commands.executeCommand('setContext', 'isRunning', true);
                     updateStatusBarItemsWhileRunning();
+                }, (error) => {
+                    console.error(error);
+                    if (error !== undefined) {
+                        var strString = error.toString().split('\n')[0];
+                        window.showErrorMessage(strString, 'Run bundle install')
+                            .then(selection => {
+                                if (selection !== undefined && currWorkspace) {
+                                    runBundleInstall(currWorkspace);
+                                }
+                            });
+                    }
+                    revertStatusBarItems();
                 }).
                 catch((error) => {
                     console.error(error);
