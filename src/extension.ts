@@ -1,13 +1,15 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
-import { ExtensionContext, commands, window, Terminal, StatusBarAlignment, StatusBarItem, workspace, WorkspaceFolder } from 'vscode';
+import { ExtensionContext, commands, window, StatusBarAlignment, StatusBarItem, workspace, WorkspaceFolder } from 'vscode';
 import { existsSync } from 'fs';
-import { lookpath } from 'lookpath';
+import { lookpath } from './utils/look-path';
 import { Run } from './cmds/run';
 import { Build } from './cmds/build';
 import { Stop } from './cmds/stop';
 import { openUrl, openLocalJekyllSite } from './utils/open-in-browser';
 import path = require('path');
+import { Install } from './cmds/install';
+import { findProcessOnPort } from './utils/process-on-port';
 
 let currWorkspace: WorkspaceFolder | undefined;
 let pid: number = 0;
@@ -18,6 +20,7 @@ let runButton: StatusBarItem | undefined;
 let stopButton: StatusBarItem | undefined;
 let restartButton: StatusBarItem | undefined;
 let openInBrowserButton: StatusBarItem | undefined;
+let outputChannel = window.createOutputChannel(`Jekyll Run`);
 
 interface IStatusBarItemAlignment {
     position: StatusBarAlignment;
@@ -30,7 +33,7 @@ enum Icons {
     Restart = "$(debug-restart)"
 }
 
-function checkConfigAndGetPort(currWorkspace: WorkspaceFolder): boolean{
+function checkConfigAndGetPort(currWorkspace: WorkspaceFolder): boolean {
     const configPath = path.join(currWorkspace.uri.fsPath, '_config.yml');
     if (existsSync(configPath)) {
         var read = require('read-yaml');
@@ -158,6 +161,23 @@ function revertStatusBarItems() {
     initRunButton();
 }
 
+function runBundleInstall(currWorkspace: WorkspaceFolder) {
+    runButton?.hide();
+    commands.executeCommand('setContext', 'isBuilding', true);
+    const install = new Install();
+    install.Install(currWorkspace.uri.fsPath, outputChannel).
+        then(() => {
+            commands.executeCommand('jekyll-run.Run');
+        }, (error) => {
+            console.error(error);
+        }).
+        catch((error) => {
+            console.error(error);
+        });
+    runButton?.show();
+    commands.executeCommand('setContext', 'isBuilding', false);
+}
+
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
 export function activate(context: ExtensionContext) {
@@ -172,36 +192,49 @@ export function activate(context: ExtensionContext) {
 
     const run = commands.registerCommand('jekyll-run.Run', async () => {
         if (isStaticWebsiteWorkspace() && currWorkspace) {
-            commands.executeCommand('setContext', 'isRunning', true);
+            outputChannel.appendLine('Starting Server...');
+            outputChannel.show(true);
+            commands.executeCommand('setContext', 'isBuilding', true);
             runButton?.hide();
-            const find = require('find-process');
-            let portIsOccupiedBy: String = '';
-            await find('port', portInConfig)
-                .then(function (list: any) {
-                    if (!list.length) {
-                        console.log('port ' + portInConfig + 'is free');
-                    } else {
-                        isRunning = true;
-                        portIsOccupiedBy = list[0].name.toString();
-                        pid = list[0].pid;
-                    }
-                });
+            outputChannel.appendLine('Checking if server is already running...');
+            outputChannel.show(true);
+            var processOnPort = await findProcessOnPort(portInConfig);
+            if (processOnPort.pid !== 0) {
+                isRunning = true;
+            }
             if (!isRunning) {
                 if (!(await lookpath("jekyll"))?.startsWith('/mnt')) {
                     if (!(await lookpath("bundle"))?.startsWith('/mnt')) {
-                        runButton?.hide();
-                        commands.executeCommand('setContext', 'isBuilding', true);
                         const run = new Run();
-                        run.run(currWorkspace.uri.fsPath, portInConfig).
+                        run.run(currWorkspace.uri.fsPath, portInConfig, outputChannel).
                             then(() => {
                                 isRunning = true;
                                 commands.executeCommand('setContext', 'isRunning', true);
                                 updateStatusBarItemsWhileRunning();
+                            }, (error) => {
+                                    console.error(error);
+                                    if (error !== undefined && error !== '') {
+                                        var strString = error.toString().split('\n')[0];
+                                        window.showErrorMessage(strString, 'Run bundle install')
+                                            .then(selection => {
+                                                if (selection !== undefined && currWorkspace) {
+                                                    runBundleInstall(currWorkspace);
+                                                }
+                                            });
+                                    }
+                                    revertStatusBarItems();    
                             }).
                             catch((error) => {
                                 console.error(error);
-                                isRunning = false;
-                                commands.executeCommand('setContext', 'isRunning', false);
+                                if (error !== undefined && error !== '') {
+                                    var strString = error.toString().split('\n')[0];
+                                    window.showErrorMessage(strString, 'Run bundle install')
+                                        .then(selection => {
+                                            if (selection !== undefined && currWorkspace) {
+                                                runBundleInstall(currWorkspace);
+                                            }
+                                        });
+                                }
                                 revertStatusBarItems();
                             }).
                             finally(() => {
@@ -209,32 +242,40 @@ export function activate(context: ExtensionContext) {
                                 commands.executeCommand('setContext', 'isBuilding', false);
                             });
                     } else {
-                        commands.executeCommand('setContext', 'isRunning', false);
+                        commands.executeCommand('setContext', 'isBuilding', false);
                         runButton?.show();
                         window.showErrorMessage('Bundler not installed', 'Install Jekyll')
                             .then(selection => {
-                                if(selection != undefined) openUrl('https://jekyllrb.com/docs/installation/');
+                                if (selection !== undefined) {
+                                    openUrl('https://jekyllrb.com/docs/installation/');
+                                }
                             });
                     }
                 } else {
-                    commands.executeCommand('setContext', 'isRunning', false);
+                    commands.executeCommand('setContext', 'isBuilding', false);
                     runButton?.show();
                     window.showErrorMessage('Jekyll not installed', 'Install Jekyll')
                         .then(selection => {
-                            if(selection != undefined) openUrl('https://jekyllrb.com/docs/installation/');
+                            if (selection !== undefined) {
+                                openUrl('https://jekyllrb.com/docs/installation/');
+                            }
                         });
                 }
             } else {
-                if (portIsOccupiedBy === 'ruby.exe') {
+                if (processOnPort.name.includes('ruby')) {
+                    pid = processOnPort.pid;
+                    outputChannel.appendLine('Server is already running. Opening your site...');
+                    outputChannel.show(true);
                     openLocalJekyllSite(portInConfig);
                     isRunning = true;
                     commands.executeCommand('setContext', 'isRunning', true);
+                    commands.executeCommand('setContext', 'isBuilding', false);
                     updateStatusBarItemsWhileRunning();
                 }
                 else {
-                    commands.executeCommand('setContext', 'isRunning', false);
+                    commands.executeCommand('setContext', 'isBuilding', false);
                     runButton?.show();
-                    window.showErrorMessage('Port ' + portInConfig + ' is already occupied by process: ' + portIsOccupiedBy + ' Either kill that process or use another port in _config.yml');
+                    window.showErrorMessage('Port ' + portInConfig + ' is already occupied by process: ' + processOnPort.pid + ' Either kill that process or use another port in _config.yml');
                 }
             }
         } else {
@@ -248,22 +289,48 @@ export function activate(context: ExtensionContext) {
 
     const build = commands.registerCommand('jekyll-run.Build', async () => {
         if (isStaticWebsiteWorkspace() && currWorkspace) {
-            if (await lookpath('jekyll')) {
-                if (await lookpath('bundle')) {
+            if (!(await lookpath("jekyll"))?.startsWith('/mnt')) {
+                if (!(await lookpath("bundle"))?.startsWith('/mnt')) {
                     commands.executeCommand('setContext', 'isBuilding', true);
                     runButton?.hide();
                     const build = new Build();
-                    build.build(currWorkspace.uri.fsPath).
-                        catch((error) => console.error(error)).
+                    build.build(currWorkspace.uri.fsPath, outputChannel).
+                        catch((error) => {
+                            console.error(error);
+                            if (error !== undefined) {
+                                var strString = error.toString().split('\n')[0];
+                                window.showErrorMessage(strString, 'Run bundle install')
+                                    .then(selection => {
+                                        if (selection !== undefined && currWorkspace) {
+                                            runBundleInstall(currWorkspace);
+                                        }
+                                    });
+                            }
+                            revertStatusBarItems();
+                        }).
                         finally(() => {
                             commands.executeCommand('setContext', 'isBuilding', false);
                             runButton?.show();
                         });
                 } else {
-                    window.showErrorMessage('Bundler not installed');
+                    commands.executeCommand('setContext', 'isBuilding', false);
+                    runButton?.show();
+                    window.showErrorMessage('Bundler not installed', 'Install Jekyll')
+                        .then(selection => {
+                            if (selection !== undefined) {
+                                openUrl('https://jekyllrb.com/docs/installation/');
+                            }
+                        });
                 }
             } else {
-                window.showErrorMessage('Jekyll not installed');
+                commands.executeCommand('setContext', 'isBuilding', false);
+                runButton?.show();
+                window.showErrorMessage('Jekyll not installed', 'Install Jekyll')
+                    .then(selection => {
+                        if (selection !== undefined) {
+                            openUrl('https://jekyllrb.com/docs/installation/');
+                        }
+                    });
             }
         } else {
             if (currWorkspace) {
@@ -277,7 +344,7 @@ export function activate(context: ExtensionContext) {
     const stop = commands.registerCommand('jekyll-run.Stop', async () => {
         if (currWorkspace && isRunning) {
             const stop = new Stop();
-            stop.Stop(pid, portInConfig).then(() => {
+            stop.Stop(pid, outputChannel).then(() => {
                 isRunning = false;
                 commands.executeCommand('setContext', 'isRunning', false);
                 commands.executeCommand('setContext', 'isBuilding', false);
@@ -291,7 +358,7 @@ export function activate(context: ExtensionContext) {
     const restart = commands.registerCommand('jekyll-run.Restart', async () => {
         if (currWorkspace && isRunning) {
             const stop = new Stop();
-            stop.Stop(pid, portInConfig);
+            stop.Stop(pid, outputChannel);
             //runButton?.hide();
             stopButton?.hide();
             stopButton?.dispose();
@@ -301,16 +368,35 @@ export function activate(context: ExtensionContext) {
             openInBrowserButton?.dispose();
             commands.executeCommand('setContext', 'isBuilding', true);
             const run = new Run();
-            run.run(currWorkspace.uri.fsPath, portInConfig).
+            run.run(currWorkspace.uri.fsPath, portInConfig, outputChannel).
                 then(() => {
                     isRunning = true;
                     commands.executeCommand('setContext', 'isRunning', true);
                     updateStatusBarItemsWhileRunning();
+                }, (error) => {
+                    console.error(error);
+                    if (error !== undefined) {
+                        var strString = error.toString().split('\n')[0];
+                        window.showErrorMessage(strString, 'Run bundle install')
+                            .then(selection => {
+                                if (selection !== undefined && currWorkspace) {
+                                    runBundleInstall(currWorkspace);
+                                }
+                            });
+                    }
+                    revertStatusBarItems();
                 }).
                 catch((error) => {
                     console.error(error);
-                    isRunning = false;
-                    commands.executeCommand('setContext', 'isRunning', false);
+                    if (error !== undefined) {
+                        var strString = error.toString().split('\n')[0];
+                        window.showErrorMessage(strString, 'Run bundle install')
+                            .then(selection => {
+                                if (selection !== undefined && currWorkspace) {
+                                    runBundleInstall(currWorkspace);
+                                }
+                            });
+                    }
                     revertStatusBarItems();
                 }).
                 finally(() => {

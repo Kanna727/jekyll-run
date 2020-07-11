@@ -1,9 +1,10 @@
-import { window, ProgressLocation } from "vscode";
+import { window, ProgressLocation, OutputChannel } from "vscode";
+import { killProcessAndChildren } from "../utils/kill-process-children";
 
 export class Stop {
     constructor() { }
-    
-    async Stop(pid: number, port: number) {
+
+    async Stop(pid: number, outputChannel: OutputChannel) {
         return await window.withProgress(
             {
                 location: ProgressLocation.Notification,
@@ -11,14 +12,13 @@ export class Stop {
                 cancellable: false,
             },
             async () => {
-                return new Promise((resolve, _reject) => {
+                return new Promise(async (resolve) => {
                     console.log('stopping: ' + pid);
-                    process.kill(pid);
-                    const { killPortProcess } = require('kill-port-process');
-
-                    (async () => {
-                        await killPortProcess(port);
-                    })().then(() => resolve());
+                    killProcessAndChildren(pid).finally(() => {
+                        outputChannel.appendLine('Server Stopped');
+                        outputChannel.show(true);
+                        resolve();
+                    });
                 });
             }
         );
