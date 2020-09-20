@@ -6,7 +6,7 @@
     <img alt="GitHub" src="https://img.shields.io/github/license/Kanna727/jekyll-run?style=for-the-badge">
 </p>
 
-# VSCode Extension to Build & Run Jekyll Static Websites
+# VSCode Extension to Build & Run Jekyll Static Websites Locally
 
 This extension can simply Run your Jekyll site locally and opens your site in browser
 
@@ -51,6 +51,12 @@ If a Jekyll Workspace is open:
     <p align="center">
     <img  src="media/snaps/editor-title-stop-restart.png">
     </p>
+
+## Configuration
+
+Following fields in the extension's settings page are configurable:
+
+* `jekyll-run.commandLineArguments`: Command Line Arguments to be passed to `bundle exec jekyll serve` cmd. Defaults to empty string i.e, no arguments
 
 ## Requirements
 
