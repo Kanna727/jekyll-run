@@ -1,3 +1,11 @@
+# [1.5.0](https://github.com/Kanna727/jekyll-run/compare/v1.4.3...v1.5.0) (2020-09-20)
+
+
+### Features
+
+* cla support ([beb3f89](https://github.com/Kanna727/jekyll-run/commit/beb3f8916cc48a187068190638b74455129edbe5))
+* cla support ([34ec481](https://github.com/Kanna727/jekyll-run/commit/34ec4819f05d6e15fbdd743013cb58c6c0a6178e))
+
 ## [1.4.3](https://github.com/Kanna727/jekyll-run/compare/v1.4.2...v1.4.3) (2020-07-11)
 
 
