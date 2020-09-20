@@ -24,6 +24,8 @@ If a Jekyll Workspace is open:
   | Jekyll Build | (ctrl+F8) | Builds Project
   | Jekyll Open in Browser | (ctrl+F9) | Opens the local hosted site in Browser while Jekyll Server is running
 
+  All the above shortcuts are also configurable via vscode keyboard shortcuts editor
+
 * Status Bar shortcuts:
 
   * Jekyll Run
