@@ -164,7 +164,17 @@
 				"command": "jekyll-run.Open",
 				"when": "jekyll-run&&isRunning&&!isBuilding"
 			}
-		]
+		],
+		"configuration":{
+			"title": "Jekyll Run - Configuration",
+			"properties": {
+				"jekyll-run.commandLineArguments": {
+					"type": "string",
+					"description": "Command Line Arguments to be passed to `bundle exec jekyll serve` cmd",
+					"default": ""
+				}
+			}
+		}
 	},
 	"scripts": {
 		"vscode:prepublish": "npm run compile",

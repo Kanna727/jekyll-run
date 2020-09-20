@@ -206,11 +206,23 @@ export function activate(context: ExtensionContext) {
                 if (!(await lookpath("jekyll"))?.startsWith('/mnt')) {
                     if (!(await lookpath("bundle"))?.startsWith('/mnt')) {
                         const run = new Run();
+                        outputChannel.appendLine('Jekyll Building...');
+                        outputChannel.show(true);
                         run.run(currWorkspace.uri.fsPath, portInConfig, outputChannel).
-                            then(() => {
+                            then((status) => {
                                 isRunning = true;
                                 commands.executeCommand('setContext', 'isRunning', true);
-                                updateStatusBarItemsWhileRunning();
+                                if (status) {
+                                    updateStatusBarItemsWhileRunning();
+                                    outputChannel.appendLine('Your site is live on port: ' + portInConfig);
+                                    outputChannel.show(true);
+                                }
+                                else {
+                                    isRunning = false;
+                                    commands.executeCommand('setContext', 'isRunning', false);
+                                    commands.executeCommand('setContext', 'isBuilding', false);
+                                    revertStatusBarItems();
+                                }
                             }, (error) => {
                                     console.error(error);
                                     if (error !== undefined && error !== '') {

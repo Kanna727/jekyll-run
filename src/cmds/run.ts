@@ -7,6 +7,7 @@ import {
 import { spawn } from 'child_process';
 import { openLocalJekyllSite } from '../utils/open-in-browser';
 import { Stop } from './stop';
+import { Config } from '../config/config';
 
 export class Run {
   pid: number = 0;
@@ -22,7 +23,8 @@ export class Run {
       },
       async (_progress, token) => {
         return new Promise((resolve, reject) => {
-          var child = spawn(`bundle exec jekyll serve`, {
+          const config = Config.get();
+          var child = spawn('bundle exec jekyll serve', config.commandLineArguments.toString().trim().split(' '), {
             cwd: workspaceRootPath,
             shell: true,
           });
@@ -44,7 +46,7 @@ export class Run {
             outputChannel.show(true);
             if (strString.includes('Server running')) {
               openLocalJekyllSite(portInConfig);
-              resolve();
+              resolve(true);
             }
             else if (strString.includes('Regenerating')) {
               this.regenerateStatus.text = 'Jekyll Regenerating...';
@@ -55,7 +57,8 @@ export class Run {
             }
           });
           child.stderr.on('data', (data) => {
-            if(data.toString().includes('Error')){
+            var error = data.toString();
+            if(error.includes('Error') || error.includes('argument')){
               console.log('stderr: ' + data);
               this.regenerateStatus.hide();
               reject(data);
@@ -64,7 +67,7 @@ export class Run {
           child.on('close', (code) => {
             console.log('closing code: ' + code);
             this.regenerateStatus.hide();
-            resolve();
+            resolve(false);
           });
         });
       },
