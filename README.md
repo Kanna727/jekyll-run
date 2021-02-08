@@ -6,6 +6,10 @@
     <img alt="GitHub" src="https://img.shields.io/github/license/Kanna727/jekyll-run?style=for-the-badge">
 </p>
 
+# Looking for Donations & Contributors
+
+I'm unable to actively develop & improve this extension to support macbook, github codespaces etc.. You can [sponsor](https://patreon.com/dedsec727) or contribute to make this extension more feature rich
+
 # VSCode Extension to Build & Run Jekyll Static Websites Locally
 
 This extension can simply Run your Jekyll site locally and opens your site in browser
