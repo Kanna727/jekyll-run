@@ -15,6 +15,7 @@ let currWorkspace: WorkspaceFolder | undefined;
 let pid: number = 0;
 let isRunning = false;
 let portInConfig = 4000;
+let baseurlInConfig = '/';
 
 let runButton: StatusBarItem | undefined;
 let stopButton: StatusBarItem | undefined;
@@ -46,6 +47,19 @@ function checkConfigAndGetPort(currWorkspace: WorkspaceFolder): boolean {
     return false;
 }
 
+function checkConfigAndGetBaseUrl(currWorkspace: WorkspaceFolder): boolean {
+    const configPath = path.join(currWorkspace.uri.fsPath, '_config.yml');
+    if (existsSync(configPath)) {
+        var read = require('read-yaml');
+        var config = read.sync(configPath);
+
+        console.log(config);
+        if (config.baseurl !== undefined) { baseurlInConfig = config.baseurl; }
+        return true;
+    }
+    return false;
+}
+
 function isStaticWebsiteWorkspace(): boolean {
     const editor = window.activeTextEditor;
 
@@ -62,12 +76,14 @@ function isStaticWebsiteWorkspace(): boolean {
         if (resource.scheme === 'file') {
             currWorkspace = workspace.getWorkspaceFolder(resource);
             if (currWorkspace) {
+                checkConfigAndGetBaseUrl(currWorkspace);
                 return checkConfigAndGetPort(currWorkspace);
             }
         }
     } else {
         currWorkspace = workspace.workspaceFolders[0];
         if (currWorkspace) {
+            checkConfigAndGetBaseUrl(currWorkspace);
             return checkConfigAndGetPort(currWorkspace);
         }
     }
@@ -184,7 +200,7 @@ export function activate(context: ExtensionContext) {
 
     const open = commands.registerCommand('jekyll-run.Open', async () => {
         if (isStaticWebsiteWorkspace() && currWorkspace && isRunning) {
-            openLocalJekyllSite(portInConfig);
+            openLocalJekyllSite(portInConfig, baseurlInConfig);
         } else {
             window.showErrorMessage('No instance of Jekyll is running');
         }
@@ -208,7 +224,7 @@ export function activate(context: ExtensionContext) {
                         const run = new Run();
                         outputChannel.appendLine('Jekyll Building...');
                         outputChannel.show(true);
-                        run.run(currWorkspace.uri.fsPath, portInConfig, outputChannel).
+                        run.run(currWorkspace.uri.fsPath, portInConfig, baseurlInConfig, outputChannel).
                             then((status) => {
                                 isRunning = true;
                                 commands.executeCommand('setContext', 'isRunning', true);
@@ -278,7 +294,7 @@ export function activate(context: ExtensionContext) {
                     pid = processOnPort.pid;
                     outputChannel.appendLine('Server is already running. Opening your site...');
                     outputChannel.show(true);
-                    openLocalJekyllSite(portInConfig);
+                    openLocalJekyllSite(portInConfig, baseurlInConfig);
                     isRunning = true;
                     commands.executeCommand('setContext', 'isRunning', true);
                     commands.executeCommand('setContext', 'isBuilding', false);
@@ -380,7 +396,7 @@ export function activate(context: ExtensionContext) {
             openInBrowserButton?.dispose();
             commands.executeCommand('setContext', 'isBuilding', true);
             const run = new Run();
-            run.run(currWorkspace.uri.fsPath, portInConfig, outputChannel).
+            run.run(currWorkspace.uri.fsPath, portInConfig, baseurlInConfig, outputChannel).
                 then(() => {
                     isRunning = true;
                     commands.executeCommand('setContext', 'isRunning', true);
