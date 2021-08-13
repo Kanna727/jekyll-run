@@ -14,7 +14,7 @@ export class Run {
   regenerateStatus = window.createStatusBarItem(StatusBarAlignment.Left, 497);
   constructor() { }
 
-  async run(workspaceRootPath: string, portInConfig: number, outputChannel: OutputChannel) {
+  async run(workspaceRootPath: string, portInConfig: number, baseurlInConfig: string, outputChannel: OutputChannel) {
     return await window.withProgress(
       {
         location: ProgressLocation.Notification,
@@ -45,7 +45,7 @@ export class Run {
             outputChannel.append(strString);
             outputChannel.show(true);
             if (strString.includes('Server running')) {
-              openLocalJekyllSite(portInConfig);
+              openLocalJekyllSite(portInConfig, baseurlInConfig);
               resolve(true);
             }
             else if (strString.includes('Regenerating')) {
