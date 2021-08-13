@@ -1,3 +1,10 @@
+# [1.6.0](https://github.com/Kanna727/jekyll-run/compare/v1.5.0...v1.6.0) (2021-08-13)
+
+
+### Features
+
+* Support for open in browser with baseurl ([b96da09](https://github.com/Kanna727/jekyll-run/commit/b96da093d46c218d7ea24ef845e2312b6f4fdbe7))
+
 # [1.5.0](https://github.com/Kanna727/jekyll-run/compare/v1.4.3...v1.5.0) (2020-09-20)
 
 
