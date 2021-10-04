@@ -9,11 +9,16 @@ export function openUrl(url: string = 'http://127.0.0.1') {
     }
 }
 
-export function openLocalJekyllSite(port: number = 4000, baseurl: string = '') {
-    let path = baseurl.replace(/^\/?(\S+[^\/]|\S+)(\/?)$/, '/$1/');
-    if (compareVersions.compare(version, '1.31', '<')) {
-        commands.executeCommand('vscode.open', Uri.parse('http://127.0.0.1:' + port + path));
-    } else {
-        env.openExternal(Uri.parse('http://127.0.0.1:' + port + path));
-    }
-}
+/**
+ * Deprecated from v1.7.0,
+ * @param port 
+ * @param baseurl 
+ */
+// export function openLocalJekyllSite(port: number = 4000, baseurl: string = '') {
+//     let path = baseurl.replace(/^\/?(\S+[^\/]|\S+)(\/?)$/, '/$1/');
+//     if (compareVersions.compare(version, '1.31', '<')) {
+//         commands.executeCommand('vscode.open', Uri.parse('http://127.0.0.1:' + port + path));
+//     } else {
+//         env.openExternal(Uri.parse('http://127.0.0.1:' + port + path));
+//     }
+// }
