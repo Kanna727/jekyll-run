@@ -93,7 +93,7 @@ function isStaticWebsiteWorkspace(): boolean {
     } else {
         currWorkspace = workspace.workspaceFolders[0];
         if (currWorkspace) {
-            return checkConfigAndGetPort(currWorkspace);
+            return getPortAndBaseurl(currWorkspace);
         }
     }
     return false;
