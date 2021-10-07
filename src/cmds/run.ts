@@ -68,6 +68,11 @@ export class Run {
               this.regenerateStatus.hide();
               reject(data);
             }
+            if(error.includes('ruby')){
+              console.log('stderr: ' + data);
+              this.regenerateStatus.hide();
+              reject(error.match(/\B(.+)Errno(.+)/m));
+            }
           });
           child.on('close', (code) => {
             console.log('closing code: ' + code);
