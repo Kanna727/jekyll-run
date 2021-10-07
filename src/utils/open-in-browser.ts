@@ -1,7 +1,7 @@
 import compareVersions = require("compare-versions");
 import { version, commands, Uri, env } from "vscode";
 
-export function openUrl(url: string = 'http://127.0.0.1') {
+export function openUrl(url: string = 'http://127.0.0.1:4000') {
     if (compareVersions.compare(version, '1.31', '<')) {
         commands.executeCommand('vscode.open', Uri.parse(url));
     } else {
