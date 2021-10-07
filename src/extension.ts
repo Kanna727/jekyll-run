@@ -53,7 +53,7 @@ function getConfigFromArgs() {
     };
 }
 
-function checkConfigAndGetPort(currWorkspace: WorkspaceFolder): boolean {
+function getPortAndBaseurl(currWorkspace: WorkspaceFolder): boolean {
     const configPath = path.join(currWorkspace.uri.fsPath, '_config.yml');
     if (existsSync(configPath)) {
         var read = require('read-yaml');
