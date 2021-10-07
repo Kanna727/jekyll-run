@@ -67,9 +67,9 @@ function checkConfigAndGetPort(currWorkspace: WorkspaceFolder): boolean {
         if (config.port !== undefined) { portInConfig = config.port; }
         if (config.baseurl !== undefined) { baseurlInConfig = config.baseurl; }
 
-        const configInArgs = getConfigFromArgs();
-        serverPort = configInArgs.port? portInArgs : portInConfig;
-        serverBaseurl = configInArgs.baseurl? baseurlInArgs : baseurlInConfig;
+        getConfigFromArgs();
+        serverPort = portInArgs || portInConfig;
+        serverBaseurl = baseurlInArgs || baseurlInConfig;
         return true;
     }
     return false;
