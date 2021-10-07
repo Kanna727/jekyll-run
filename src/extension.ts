@@ -51,10 +51,6 @@ function getConfigFromArgs() {
     if (m_baseurl) {
         baseurlInArgs = m_baseurl[2];
     };
-    return { 
-        port: m_port ? true : false,
-        baseurl: m_baseurl ? true : false
-    };
 }
 
 function checkConfigAndGetPort(currWorkspace: WorkspaceFolder): boolean {
