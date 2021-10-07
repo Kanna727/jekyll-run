@@ -14,7 +14,7 @@ import { Config } from './config/config';
 
 let currWorkspace: WorkspaceFolder | undefined;
 let pid: number = 0;
-let address: string = '';
+let address: string;
 let isRunning = false;
 let portInConfig = 4000;
 let portInArgs : number;
@@ -464,16 +464,9 @@ export function activate(context: ExtensionContext) {
 
 // this method is called when your extension is deactivated
 export function deactivate() {
-    console.log("Exit VSCode. Stopping: " + pid);
-    if (currWorkspace && isRunning) {
-        const stop = new Stop();
-        stop.Stop(pid, outputChannel).then(() => {
-            isRunning = false;
-            commands.executeCommand('setContext', 'isRunning', false);
-            commands.executeCommand('setContext', 'isBuilding', false);
-            revertStatusBarItems();
-        });
-    } else {
-        window.showErrorMessage('No instance of Jekyll is running');
+    const config = Config.get();
+    if (config.stopServerOnExit) {
+        console.log("Exit VSCode. Stopping: " + pid);
+        commands.executeCommand('jekyll-run.Stop');
     }
 }
