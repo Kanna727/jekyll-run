@@ -47,7 +47,7 @@ export class Run {
             outputChannel.show(true);
             if (strString.includes('Server address')) {
               const match = strString.match(/Server address: (\S+)/m);
-              this.address = match ? match[1] : `http://localhost:${serverPort}`;
+              this.address = match?.[1]  || `http://localhost:${serverPort}`;
             }
             if (strString.includes('Server running')) {
               openUrl(this.address);
