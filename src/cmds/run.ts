@@ -5,16 +5,17 @@ import {
   OutputChannel,
 } from 'vscode';
 import { spawn } from 'child_process';
-import { openLocalJekyllSite } from '../utils/open-in-browser';
+import { openUrl } from '../utils/open-in-browser';
 import { Stop } from './stop';
 import { Config } from '../config/config';
 
 export class Run {
   pid: number = 0;
   regenerateStatus = window.createStatusBarItem(StatusBarAlignment.Left, 497);
+  address: string = '';
   constructor() { }
 
-  async run(workspaceRootPath: string, portInConfig: number, baseurlInConfig: string, outputChannel: OutputChannel) {
+  async run(workspaceRootPath: string, serverPort: number, serverBaseurl: string, outputChannel: OutputChannel) {
     return await window.withProgress(
       {
         location: ProgressLocation.Notification,
@@ -44,8 +45,12 @@ export class Run {
             var strString = data.toString();
             outputChannel.append(strString);
             outputChannel.show(true);
+            if (strString.includes('Server address')) {
+              const match = strString.match(/Server address: (\S+)/m);
+              this.address = match?.[1]  || `http://localhost:${serverPort}`;
+            }
             if (strString.includes('Server running')) {
-              openLocalJekyllSite(portInConfig, baseurlInConfig);
+              openUrl(this.address);
               resolve(true);
             }
             else if (strString.includes('Regenerating')) {
@@ -62,6 +67,11 @@ export class Run {
               console.log('stderr: ' + data);
               this.regenerateStatus.hide();
               reject(data);
+            }
+            if(error.includes('ruby')){
+              console.log('stderr: ' + data);
+              this.regenerateStatus.hide();
+              reject(error.match(/\B(.+)Errno(.+)/m));
             }
           });
           child.on('close', (code) => {
