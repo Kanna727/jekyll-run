@@ -1,3 +1,16 @@
+# [1.7.0](https://github.com/Kanna727/jekyll-run/compare/v1.6.0...v1.7.0) (2021-10-24)
+
+
+### Bug Fixes
+
+* Port 4000 is already occupied ([#29](https://github.com/Kanna727/jekyll-run/issues/29)) ([a890350](https://github.com/Kanna727/jekyll-run/commit/a8903504a61936a8947fd14a11c38470864f9404))
+* report error on running ruby code ([5488507](https://github.com/Kanna727/jekyll-run/commit/54885077e3d37fea048fe22e68d3999ff253023e))
+
+
+### Features
+
+* set stop server on vscode exit in settings ([ce0b8bf](https://github.com/Kanna727/jekyll-run/commit/ce0b8bf794a85c93c1c177ec051c533b89e5270b)), closes [#47](https://github.com/Kanna727/jekyll-run/issues/47)
+
 # [1.6.0](https://github.com/Kanna727/jekyll-run/compare/v1.5.0...v1.6.0) (2021-08-13)
 
 
